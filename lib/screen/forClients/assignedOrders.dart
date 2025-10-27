@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:memoriesweb/data/order_service_repo.dart';
 import 'package:memoriesweb/model/ordermodel.dart';
+import 'package:memoriesweb/navigation/routes.dart';
 import 'package:memoriesweb/screen/innerpgs/smallVideo.dart';
 
 class AssignedOrdersPage extends StatefulWidget {
@@ -107,17 +109,16 @@ class _AssignedOrdersPageState extends State<AssignedOrdersPage> {
                                       ),
                                       child: GestureDetector(
                                         onTap: () {
-                                          // Navigator.push(
-                                          //   context,
-                                          //   MaterialPageRoute(
-                                          //     builder:
-                                          //         (_) =>
-                                          //             FullScreenImagePage(
-                                          //               imageUrl:
-                                          //                   img,
-                                          //             ),
-                                          //   ),
-                                          // );
+                                          context.push(
+                                            Routes.nestedExPFullScreenImage,
+                                            extra: {
+                                              'url': img,
+                                              'fordownload': 0,
+                                            },
+                                          );
+                                          print(
+                                            '📤 Navigating to video page with URL: ${img}',
+                                          );
                                         },
                                         child: ClipRRect(
                                           borderRadius: BorderRadius.circular(
@@ -167,6 +168,7 @@ class _AssignedOrdersPageState extends State<AssignedOrdersPage> {
                                       child: ClipRRect(
                                         borderRadius: BorderRadius.circular(8),
                                         child: SmallVideo(
+                                          fromProfile: false,
                                           url: vid,
                                           fordownload: 5,
                                         ),

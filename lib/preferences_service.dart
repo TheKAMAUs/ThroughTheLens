@@ -35,6 +35,9 @@ class PreferencesService {
   Future<void> setcheckoutId(String checkoutId) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_checkoutId, checkoutId);
+
+    // ✅ Print to confirm it's stored
+    print("💾 Checkout ID saved locally: $checkoutId");
   }
 
   /// Get user token

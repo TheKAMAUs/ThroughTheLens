@@ -75,13 +75,13 @@ class Client extends Equatable {
       'profileImageUrl': profileImageUrl,
       'role': role,
       'editor': editor,
-      if (bio.isNotEmpty) 'bio': bio,
-      if (phoneNumber != null) 'phoneNumber': phoneNumber, // <-- new field
-      if (sampleVideos != null) 'sampleVideos': sampleVideos,
-      if (editedVideos != null) 'editedVideos': editedVideos,
-      if (rating != null) 'rating': rating,
-      if (totalEdits != null) 'totalEdits': totalEdits,
-      if (orders != null) 'orders': orders,
+      'bio': bio,
+      'phoneNumber': phoneNumber,
+      'sampleVideos': sampleVideos,
+      'editedVideos': editedVideos,
+      'rating': rating,
+      'totalEdits': totalEdits,
+      'orders': orders,
       'createdAt': createdAt,
     };
   }

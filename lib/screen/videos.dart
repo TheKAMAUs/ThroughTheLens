@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:memoriesweb/data/auth_service.dart';
 import 'package:memoriesweb/data/firebase_storage_repo.dart';
@@ -10,6 +11,7 @@ import 'package:memoriesweb/data/order_service_repo.dart';
 import 'package:memoriesweb/data/payment_Repo.dart';
 import 'package:memoriesweb/data/payment_Service.dart';
 import 'package:memoriesweb/model/ordermodel.dart';
+import 'package:memoriesweb/navigation/routes.dart';
 import 'package:memoriesweb/orderBloc/order_cubit.dart';
 import 'package:memoriesweb/orderBloc/order_state.dart';
 import 'package:memoriesweb/preferences_service.dart';
@@ -502,6 +504,12 @@ This helps our editors match your style and vision.
                     const SizedBox(height: 30),
                     TextButton(
                       onPressed: () async {
+                        bool isUserAuthenticated = globalUserDoc != null;
+                        if (!isUserAuthenticated) {
+                          context.go(Routes.loginPageRIV);
+                          return; // 🔹 Stop further execution of the method
+                        }
+
                         final orderCubit = context.read<OrderCubit>();
 
                         // ✅ Await here, since getcheckoutId returns Future<String?>
@@ -765,7 +773,11 @@ This will help us ensure we deliver a result that matches your vision.""",
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.info, color: Colors.blue, size: 48),
+                const Icon(
+                  Icons.payments_rounded,
+                  color: Colors.teal,
+                  size: 52,
+                ),
                 const SizedBox(height: 12),
                 Text(
                   response?["msg"] ?? "No message", // ✅ null safe

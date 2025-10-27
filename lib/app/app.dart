@@ -41,22 +41,32 @@ class App extends StatelessWidget {
             final messenger = ScaffoldMessenger.of(context);
 
             if (state is NetworkDisconnected) {
-              final materialBanner = MaterialBanner(
-                elevation: 0,
-                actions: const [SizedBox.shrink()],
-                backgroundColor: Colors.transparent,
-                content: AwesomeSnackbarContent(
-                  title: "⚠️ No Connection",
-                  message: "No internet connection detected.",
-                  contentType: ContentType.failure,
+              messenger
+                ..hideCurrentSnackBar()
+                ..showSnackBar(
+                  SnackBar(
+                    backgroundColor: Colors.redAccent,
+                    content: const Text(
+                      "⚠️ No internet connection detected.",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    duration: const Duration(
+                      days: 1,
+                    ), // stays until reconnected
+                  ),
+                );
+            } else if (state is NetworkConnected) {
+              messenger.hideCurrentSnackBar();
+              messenger.showSnackBar(
+                const SnackBar(
+                  backgroundColor: Colors.green,
+                  content: Text(
+                    "✅ Back online!",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  duration: Duration(seconds: 2),
                 ),
               );
-
-              messenger
-                ..hideCurrentMaterialBanner()
-                ..showMaterialBanner(materialBanner);
-            } else if (state is NetworkConnected) {
-              messenger.clearMaterialBanners();
             }
           },
           child: Scaffold(body: EasyLoading.init()(context, child)),

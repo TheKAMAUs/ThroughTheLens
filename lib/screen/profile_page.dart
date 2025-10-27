@@ -440,6 +440,7 @@ class _GridOfVideosState extends State<_GridOfVideos> {
           (context, index) => SmallVideo(
             url: widget.videoUrls![index],
             fordownload: widget.fordownload,
+            fromProfile: true,
           ),
     );
   }

@@ -32,6 +32,35 @@
 
   <title>memoriesweb</title>
   <link rel="manifest" href="manifest.json">
+
+  <script>
+    window.addEventListener('beforeinstallprompt', function (e) {
+      e.preventDefault();
+      return false;
+    });
+  </script>
+
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const appContainer = document.getElementById("app-container");
+      if (!appContainer) return;
+
+      const observer = new MutationObserver(() => {
+        const videos = appContainer.querySelectorAll("video");
+        videos.forEach((video) => {
+          video.setAttribute("controlsList", "nodownload");
+          video.setAttribute("disablePictureInPicture", "");
+
+          video.removeAttribute("controls");
+        });
+      });
+
+      observer.observe(appContainer, { childList: true, subtree: true });
+    });
+  </script> -->
+
+
 </head>
 
 <body>

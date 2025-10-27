@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:memoriesweb/data/auth_service.dart';
@@ -9,6 +10,10 @@ import 'package:memoriesweb/model/ordermodel.dart';
 import 'package:memoriesweb/navigation/routes.dart';
 import 'package:memoriesweb/screen/innerpgs/fullScreenImagePage.dart';
 import 'package:memoriesweb/screen/innerpgs/smallVideo.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:memoriesweb/screen/innerpgs/videoplay_Item.dart';
+import 'package:memoriesweb/videoBloc/videoState.dart';
+import 'package:memoriesweb/videoBloc/videocubit.dart';
 
 class ExplorePage extends StatefulWidget {
   const ExplorePage({super.key});
@@ -21,6 +26,8 @@ class _ExplorePageState extends State<ExplorePage> {
   final OrderServiceRepo order = OrderServiceRepo();
   final authService = AuthService();
   final transService = TransServiceRepo();
+
+  final typewriterController = AnimatedTextController();
   @override
   Widget build(BuildContext context) {
     var editorHeader = AppBar(
@@ -138,15 +145,12 @@ class _ExplorePageState extends State<ExplorePage> {
                                     padding: const EdgeInsets.only(right: 8.0),
                                     child: GestureDetector(
                                       onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder:
-                                                (_) => FullScreenImagePage(
-                                                  imageUrl: img,
-                                                  fordownload: 0,
-                                                ),
-                                          ),
+                                        context.push(
+                                          Routes.nestedExPFullScreenImage,
+                                          extra: {'url': img, 'fordownload': 0},
+                                        );
+                                        print(
+                                          '📤 Navigating to video page with URL: ${img}',
                                         );
                                       },
 
@@ -195,7 +199,8 @@ class _ExplorePageState extends State<ExplorePage> {
                                       borderRadius: BorderRadius.circular(8),
                                       child: SmallVideo(
                                         url: vid,
-                                        fordownload: 5,
+                                        fordownload: 6,
+                                        fromProfile: false,
                                       ),
                                     ),
                                   );
@@ -304,6 +309,7 @@ class _ExplorePageState extends State<ExplorePage> {
                                       child: SmallVideo(
                                         url: vid,
                                         fordownload: 6,
+                                        fromProfile: false,
                                       ),
                                     ),
                                   );
@@ -344,9 +350,143 @@ class _ExplorePageState extends State<ExplorePage> {
       },
     );
     bool isUserAuthenticated = globalUserDoc != null;
-
+    final mediaQuery = MediaQuery.of(context);
+    final fem = mediaQuery.size.width / 428;
     if (!isUserAuthenticated) {
-      return Scaffold(body: noUser);
+      return Scaffold(
+        body: BlocBuilder<VideoCubit, VideoState>(
+          builder: (context, state) {
+            if (state.isLoading) {
+              print('Loading videos...');
+              return const Center(child: CircularProgressIndicator());
+            } else if (state.hasError) {
+              print('Error loading videos');
+              return const Center(child: Text('Error loading videos 😕'));
+            } else if (state.downloadedVideos.isEmpty) {
+              print('No downloaded videos found.');
+              return const Center(child: Text('No videos available yet 🚧'));
+            }
+
+            // ✅ Shuffle and take only 3 videos
+            final List<Map<String, String>> videos = List.from(
+              state.downloadedVideos,
+            )..shuffle();
+            final List<Map<String, String>> limitedVideos =
+                videos.take(3).toList();
+
+            return SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 5),
+
+                  // 👤 User placeholder
+                  Center(child: noUser),
+
+                  const SizedBox(height: 15),
+
+                  // 🌈 Animated Welcome Text Container
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF1E1E2C), Color(0xFF2E2E48)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.4),
+                          blurRadius: 12,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
+                    ),
+                    child: DefaultTextStyle(
+                      style: const TextStyle(
+                        fontSize: 18,
+                        height: 1.4,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                      child: AnimatedTextKit(
+                        animatedTexts: [
+                          TypewriterAnimatedText(
+                            '🌟 Welcome! 👋\n\n'
+                            'You’re about to start your creative journey 🎬✨\n\n'
+                            '🎨 Choose your favorite editor — someone who’ll turn your photos and videos into stunning masterpieces.\n\n'
+                            '📸 Tip: Watch the short clips below to learn how to take perfect shots —\n'
+                            '💡 focus on good lighting, 📐 great angles, and 🔍 crystal clarity!',
+                            cursor: '💡',
+                            speed: Duration(milliseconds: 60),
+                          ),
+                        ],
+                        totalRepeatCount: 3,
+                        pause: Duration(seconds: 60),
+                        displayFullTextOnTap: true,
+                        stopPauseOnTap: true,
+                        controller: typewriterController,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  // 🎥 Videos Section Title
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: const [
+                      Icon(
+                        Icons.play_circle_fill,
+                        color: Colors.amber,
+                        size: 28,
+                      ),
+                      SizedBox(width: 8),
+                      Text(
+                        "Watch sample videos below 👇",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  // 🎬 List of Sample Videos
+                  ListView.builder(
+                    itemCount: limitedVideos.length,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      final videoData = limitedVideos[index];
+                      final videoUrl = videoData['videoUrl']!;
+                      final productName = videoData['firstName']!;
+                      final description = videoData['description']!;
+
+                      return SizedBox(
+                        height: MediaQuery.of(context).size.height / 3,
+                        child: VideoPlayerItem(
+                          videoUrl: videoUrl,
+                          fem: fem,
+                          productName: productName,
+                          description: description,
+                          index: index,
+                          onPageChanged: (_) {},
+                          isPreloaded: true,
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      );
     }
 
     // ✅ If authenticated → show appropriate UI
@@ -458,7 +598,9 @@ class _ExplorePageState extends State<ExplorePage> {
                 ),
                 const SizedBox(height: 6),
                 const Text(
-                  '🎬 Passionate video editor turning raw clips into cinematic stories!',
+                  '🎬 Passion drives my edits, vision shapes my frame.\n'
+                  'From rough cuts to cinematic brilliance.\n'
+                  'I bring stories to life, one scene at a time.',
                   style: TextStyle(fontStyle: FontStyle.italic),
                 ),
               ],
@@ -483,7 +625,11 @@ class _ExplorePageState extends State<ExplorePage> {
                 ];
                 return ClipRRect(
                   borderRadius: BorderRadius.circular(10),
-                  child: SmallVideo(url: sampleVideos[index], fordownload: 6),
+                  child: SmallVideo(
+                    url: sampleVideos[index],
+                    fordownload: 6,
+                    fromProfile: false,
+                  ),
                 );
               },
             ),

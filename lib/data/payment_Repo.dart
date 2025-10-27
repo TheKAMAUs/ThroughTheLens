@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
+
 import 'package:memoriesweb/data/auth_service.dart';
 import 'package:memoriesweb/data/payment_Service.dart';
 import 'package:memoriesweb/preferences_service.dart';
@@ -15,7 +16,7 @@ class MpesaDarajaApi {
   final String shortCode = "174379"; // Business ShortCode
   final String passkey =
       "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919"; // Daraja PassKey
-  final String callbackUrl = "https://733eadf9e2d8.ngrok-free.app/api/callback";
+  final String stkUrl = "https://throughthelensbackend.onrender.com/stkpush";
 
   final Dio dio = Dio();
 
@@ -74,54 +75,54 @@ class MpesaDarajaApi {
       // final phoneInt = int.parse(phoneNumber);
       // print("✅ Formatted phone number: $phoneNumber");
 
-      final accessToken = await getAccessToken();
-      print("🔑 Access token acquired: $accessToken");
+      // final accessToken = await getAccessToken();
+      // print("🔑 Access token acquired: $accessToken");
 
-      const stkUrl =
-          "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest";
+      // const processrequestUrl =
+      //     "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest";
 
-      String timestamp = DateFormat("yyyyMMddHHmmss").format(DateTime.now());
-      print("🕒 Timestamp generated: $timestamp");
+      // String timestamp = DateFormat("yyyyMMddHHmmss").format(DateTime.now());
+      // print("🕒 Timestamp generated: $timestamp");
 
-      String password = base64Encode(
-        utf8.encode("$shortCode$passkey$timestamp"),
-      );
-      print("🔐 Encoded password: $password");
+      // String password = base64Encode(
+      //   utf8.encode("$shortCode$passkey$timestamp"),
+      // );
+      // print("🔐 Encoded password: $password");
 
-      print("🚀 Sending STK Push request to: $stkUrl");
-      print(
-        "📦 Request body: {"
-        "BusinessShortCode: $shortCode, "
-        "Password: $password, "
-        "Timestamp: $timestamp, "
-        "TransactionType: CustomerPayBillOnline, "
-        "Amount: $amount, "
-        "PartyA: $phoneNumber, "
-        "PartyB: $shortCode, "
-        "PhoneNumber: $phoneNumber, "
-        "CallBackURL: $callbackUrl, "
-        "AccountReference: $accountNumber, "
-        "TransactionDesc: Mpesa Daraja API stk push test"
-        "}",
-      );
+      // print("🚀 Sending STK Push request to: $stkUrl");
+      // print(
+      //   "📦 Request body: {"
+      //   "BusinessShortCode: $shortCode, "
+      //   "Password: $password, "
+      //   "Timestamp: $timestamp, "
+      //   "TransactionType: CustomerPayBillOnline, "
+      //   "Amount: $amount, "
+      //   "PartyA: $phoneNumber, "
+      //   "PartyB: $shortCode, "
+      //   "PhoneNumber: $phoneNumber, "
+      //   "CallBackURL: $processrequestUrl, "
+      //   "AccountReference: $accountNumber, "
+      //   "TransactionDesc: Mpesa Daraja API stk push test"
+      //   "}",
+      // );
 
-      Response response = await dio.post(
-        stkUrl,
-        options: Options(headers: {"Authorization": "Bearer $accessToken"}),
-        data: {
-          "BusinessShortCode": shortCode,
-          "Password": password,
-          "Timestamp": timestamp,
-          "TransactionType": "CustomerPayBillOnline",
-          "Amount": amount,
-          "PartyA": phoneNumber,
-          "PartyB": shortCode,
-          "PhoneNumber": phoneNumber,
-          "CallBackURL": callbackUrl,
-          "AccountReference": accountNumber,
-          "TransactionDesc": "Mpesa Daraja API stk push test",
-        },
-      );
+      // Response response = await dio.post(
+      //   stkUrl,
+      //   options: Options(headers: {"Authorization": "Bearer $accessToken"}),
+      //   data: {
+      //     "BusinessShortCode": shortCode,
+      //     "Password": password,
+      //     "Timestamp": timestamp,
+      //     "TransactionType": "CustomerPayBillOnline",
+      //     "Amount": amount,
+      //     "PartyA": phoneNumber,
+      //     "PartyB": shortCode,
+      //     "PhoneNumber": phoneNumber,
+      //     "CallBackURL": processrequestUrl,
+      //     "AccountReference": accountNumber,
+      //     "TransactionDesc": "Mpesa Daraja API stk push test",
+      //   },
+      // );
       // final updatedUser = globalUserDoc?.copyWith(phoneNumber: phoneInt);
       // final clientDocRef = FirebaseFirestore.instance
       //     .collection('clients')
@@ -130,25 +131,43 @@ class MpesaDarajaApi {
       // final auth = AuthService();
       // await auth.fetchClient();
 
-      // Save response
-      PaymentManager().savePaymentResponse(response.data);
+      // 🔥 Call your Render backend instead of Safaricom
+      final response = await Dio().post(
+        stkUrl,
+        data: {
+          "phoneNumber": phoneNumber,
+          "amount": amount,
+          "accountNumber": accountNumber,
+        },
+      );
+      print("✅ Response received from Safaricom:");
+      print(response.data);
+      // ✅ Extract the nested response
+      final safResponse = response.data['response'] ?? {};
+
+      // ✅ Save response properly
+      PaymentManager().savePaymentResponse(safResponse);
 
       PreferencesService().setcheckoutId(
         PaymentManager().globalPayment!.checkoutRequestID,
       );
-      print("✅ Response received from Safaricom:");
-      print(response.data);
+      final payment = PaymentManager().globalPayment;
+      print("💾 Checkout ID saved locally: ${payment?.checkoutRequestID}");
 
       return {
-        "msg":
-            "Request is successful ✔✔. Please enter mpesa pin to complete the transaction",
-        "status": true,
+        "msg": response.data['message'],
+        "status": response.data['status'],
         "response": response.data,
       };
     } catch (e) {
+      // 🔥 Improved error diagnostics
       if (e is DioException) {
-        print("❌ DioException response data: ${e.response?.data}");
-        print("❌ DioException status code: ${e.response?.statusCode}");
+        print("❌ DioException occurred!");
+        print("🔴 Type: ${e.type}");
+        print("🧾 Status Code: ${e.response?.statusCode}");
+        print("📦 Response Data: ${e.response?.data}");
+        print("🌐 Request Options: ${e.requestOptions}");
+        print("📡 Error Message: ${e.message}");
       } else {
         print("❌ Unknown error: $e");
       }

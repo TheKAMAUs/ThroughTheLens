@@ -16,7 +16,8 @@ class OrderModel extends Equatable {
   final List<String>? videoUrls;
   final List<String>? editedVideoUrls;
   final bool? complaint;
-  final String? mpesaReceipt; // ✅ New field
+  final String? mpesaReceipt;
+  final int? noComplaints; // ✅ New field added
 
   const OrderModel({
     required this.imageUrls,
@@ -33,7 +34,8 @@ class OrderModel extends Equatable {
     this.videoUrls,
     this.editedVideoUrls,
     this.complaint,
-    this.mpesaReceipt, // ✅ Constructor
+    this.mpesaReceipt,
+    this.noComplaints, // ✅ Constructor
   });
 
   factory OrderModel.fromMap(Map<String, dynamic> map, String id) {
@@ -52,7 +54,8 @@ class OrderModel extends Equatable {
       videoUrls: List<String>.from(map['videoUrls'] ?? []),
       editedVideoUrls: List<String>.from(map['editedVideoUrls'] ?? []),
       complaint: map['complaint'] ?? false,
-      mpesaReceipt: map['mpesaReceipt'] ?? '', // ✅ From map
+      mpesaReceipt: map['mpesaReceipt'] ?? '',
+      noComplaints: map['noComplaints'] ?? 0, // ✅ From map
     );
   }
 
@@ -72,7 +75,8 @@ class OrderModel extends Equatable {
       'videoUrls': videoUrls,
       'editedVideoUrls': editedVideoUrls,
       'complaint': complaint,
-      'mpesaReceipt': mpesaReceipt, // ✅ to map
+      'mpesaReceipt': mpesaReceipt,
+      'noComplaints': noComplaints, // ✅ to map
     };
   }
 
@@ -91,7 +95,8 @@ class OrderModel extends Equatable {
     List<String>? videoUrls,
     List<String>? editedVideoUrls,
     bool? complaint,
-    String? mpesaReceipt, // ✅ copyWith
+    String? mpesaReceipt,
+    int? noComplaints, // ✅ copyWith
   }) {
     return OrderModel(
       orderId: orderId ?? this.orderId,
@@ -109,6 +114,7 @@ class OrderModel extends Equatable {
       editedVideoUrls: editedVideoUrls ?? this.editedVideoUrls,
       complaint: complaint ?? this.complaint,
       mpesaReceipt: mpesaReceipt ?? this.mpesaReceipt,
+      noComplaints: noComplaints ?? this.noComplaints,
     );
   }
 
@@ -128,6 +134,7 @@ class OrderModel extends Equatable {
     videoUrls,
     editedVideoUrls,
     complaint,
-    mpesaReceipt, // ✅ Equatable
+    mpesaReceipt,
+    noComplaints, // ✅ Equatable
   ];
 }

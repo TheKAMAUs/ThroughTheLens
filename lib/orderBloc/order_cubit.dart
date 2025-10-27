@@ -112,6 +112,7 @@ class OrderCubit extends Cubit<OrderState> {
           orderedAt: DateTime.now(),
           imageUrls: imageUrls,
           videoUrls: videoUrls,
+          noComplaints: 0,
         );
 
         await _firestore.createOrder(order);
@@ -147,6 +148,7 @@ class OrderCubit extends Cubit<OrderState> {
         orderedAt: DateTime.now(),
         videoUrls: [],
         imageUrls: imageUrls,
+        noComplaints: 0,
       );
 
       await _firestore.createOrder(order);
@@ -179,6 +181,7 @@ class OrderCubit extends Cubit<OrderState> {
         orderedAt: DateTime.now(),
         videoUrls: videoUrls,
         imageUrls: [],
+        noComplaints: 0,
       );
 
       await _firestore.createOrder(order);

@@ -16,64 +16,42 @@ class VideoCubit extends Cubit<VideoState> {
 
   Future<void> fetchVideos() async {
     emit(state.copyWith(isLoading: true, hasError: false));
-    // await isCacheEmpty();
+
     try {
-      if ((globalUserDoc?.editedVideos ?? []).isNotEmpty &&
-          globalUserDoc != null) {
-        // do something
+      final querySnapshot =
+          await FirebaseFirestore.instance
+              .collection('clients')
+              .where('editor', isEqualTo: true)
+              .get();
 
-        final List<Map<String, String>> videos = [];
-        List<String>? videoUrlList = globalUserDoc?.editedVideos;
+      print('Found ${querySnapshot.docs.length} clients with sample videos');
 
-        for (var videoUrl in videoUrlList!) {
+      final List<Map<String, String>> videos = [];
+
+      for (var doc in querySnapshot.docs) {
+        List<dynamic> videoUrlList = doc.data()['sampleVideos'] ?? [];
+
+        for (var videoUrl in videoUrlList) {
           String url = videoUrl.toString();
           videos.add({
             'videoUrl': url,
-            'firstName': globalUserDoc?.name ?? '',
-            'description': globalUserDoc?.bio ?? '',
+            'firstName': doc.data()['name'] ?? '',
+            'description': doc.data()['bio'] ?? '',
           });
         }
-        videos.shuffle();
-        print('Shuffled videos list from user: $videos');
-
-        await processVideos(videos);
-      } else {
-        final querySnapshot =
-            await FirebaseFirestore.instance
-                .collection('clients')
-                .where('editor', isEqualTo: true)
-                .get();
-
-        print('Found ${querySnapshot.docs.length} clients with sample videos');
-
-        // final nonEmptyClients =
-        //     querySnapshot.docs.where((doc) {
-        //       final list = (doc['sampleVideos'] ?? []) as List;
-        //       return list.isNotEmpty;
-        //     }).toList();
-
-        // print('Found ${nonEmptyClients.length} clients with sample videos');
-
-        final List<Map<String, String>> videos = [];
-
-        for (var doc in querySnapshot.docs) {
-          List<dynamic> videoUrlList = doc.data()['sampleVideos'] ?? [];
-
-          for (var videoUrl in videoUrlList) {
-            String url = videoUrl.toString();
-            videos.add({
-              'videoUrl': url,
-              'firstName': doc.data()['name'] ?? '',
-              'description': doc.data()['bio'] ?? '',
-            });
-          }
-        }
-
-        videos.shuffle();
-        print('Shuffled videos list FROM EDITORS : $videos');
-
-        await processVideos(videos);
       }
+
+      videos.shuffle();
+      print('Shuffled videos list FROM EDITORS : $videos');
+
+      // await processVideos(videos);
+
+      emit(
+        state.copyWith(
+          downloadedVideos: List.from(state.downloadedVideos)..addAll(videos),
+          isLoading: false,
+        ),
+      );
     } catch (e) {
       emit(state.copyWith(isLoading: false, hasError: true));
       print("Error fetching videos: $e");

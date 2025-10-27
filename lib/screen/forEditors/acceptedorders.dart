@@ -147,15 +147,15 @@ class _AcceptedOrdersPageState extends State<AcceptedOrdersPage> {
                                       ),
                                       child: GestureDetector(
                                         onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder:
-                                                  (_) => FullScreenImagePage(
-                                                    imageUrl: img,
-                                                    fordownload: 1,
-                                                  ),
-                                            ),
+                                          context.push(
+                                            Routes.nestedExPFullScreenImage,
+                                            extra: {
+                                              'url': img,
+                                              'fordownload': 1,
+                                            },
+                                          );
+                                          print(
+                                            '📤 Navigating to video page with URL: ${img}',
                                           );
                                         },
 
@@ -209,6 +209,7 @@ class _AcceptedOrdersPageState extends State<AcceptedOrdersPage> {
                                         child: SmallVideo(
                                           url: vid,
                                           fordownload: 5,
+                                          fromProfile: false,
                                         ),
                                       ),
                                     );

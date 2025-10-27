@@ -9,7 +9,7 @@ class Routes {
   static const String authWrapper = '/auth'; // Set as the root route
   // static const String nestedAuth = '/splash/auth';
 
-  static const String loginPageRIV = '/loginRIV';
+  static const String loginPageRIV = '/login';
 
   static const String signupPageRIV = 'signup';
   static const String nestedSignup = '/loginRIV/signup';
@@ -35,4 +35,14 @@ class Routes {
   static const String acceptedOrders = 'accepted';
   static const String nestedAccepted = '/explore/accepted';
   static const String nestedAssigned = '/explore/assigned';
+
+  // 🎬 New FullScreenVideoPage route
+  static const String fullScreenVideo = 'video';
+  static const String nestedExPFullScreenVideo = '/explore/video';
+  static const String nestedhomeFullScreenVideo = '/home/video';
+
+  // 🖼️ Image routes
+  static const String fullScreenImage = 'image';
+  static const String nestedExPFullScreenImage = '/explore/image';
+  static const String nestedhomeFullScreenImage = '/home/image';
 }

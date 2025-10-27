@@ -1,3 +1,5 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:memoriesweb/auth/authCubit.dart';
 import 'package:memoriesweb/login/loginRivaan.dart';
 import 'package:memoriesweb/navigation/main_screen.dart';
 import 'package:memoriesweb/navigation/routes.dart';
@@ -6,10 +8,13 @@ import 'package:flutter/material.dart';
 
 import 'package:go_router/go_router.dart';
 import 'package:memoriesweb/auth_wrapper.dart';
+
 import 'package:memoriesweb/screen/explore_page.dart';
 import 'package:memoriesweb/screen/forClients/assignedOrders.dart';
 import 'package:memoriesweb/screen/forEditors/acceptedorders.dart';
-import 'package:memoriesweb/screen/home_page.dart';
+import 'package:memoriesweb/screen/innerpgs/fullScreenImagePage.dart';
+import 'package:memoriesweb/screen/innerpgs/fullScreenVideoPage.dart';
+
 import 'package:memoriesweb/screen/innerpgs/profileEditPage.dart';
 import 'package:memoriesweb/screen/innerpgs/snapStyleVideoScroll.dart';
 import 'package:memoriesweb/screen/innerpgs/userDetailPage.dart';
@@ -24,6 +29,44 @@ final GoRouter router = GoRouter(
   initialLocation:
       // Routes.home,
       Routes.authWrapper,
+
+  debugLogDiagnostics: true,
+
+  // redirect: (BuildContext context, GoRouterState state) {
+  //   final authState = context.read<AuthCubit>().state;
+
+  //   print('🧭 [GoRouter Redirect]');
+  //   print('→ Current path: ${state.fullPath}');
+  //   print(
+  //     '→ AuthState: isLoading=${authState.isLoading}, isLoggedIn=${authState.isLoggedIn}, uid=${authState.uid}',
+  //   );
+
+  //   // 🕒 Wait until we know if the user is logged in
+  //   if (authState.isLoading) {
+  //     print('⏳ Still loading auth state, skipping redirect.');
+  //     return null;
+  //   }
+
+  //   final isAuthPage =
+  //       state.fullPath == Routes.loginPageRIV ||
+  //       state.fullPath == Routes.authWrapper;
+
+  //   // 🔒 Not logged in → redirect to login
+  //   if (!authState.isLoggedIn && !isAuthPage) {
+  //     print('🚫 User not logged in → redirecting to ${Routes.authWrapper}');
+  //     return Routes.home;
+  //   }
+
+  //   // 🏠 Logged in and trying to access login/auth → go home
+  //   if (authState.isLoggedIn && isAuthPage) {
+  //     print('✅ User is logged in → redirecting to ${Routes.home}');
+  //     return Routes.home;
+  //   }
+
+  //   // ✅ No redirect needed
+  //   print('➡️ No redirect required, staying on ${state.fullPath}');
+  //   return null;
+  // },
   routes: [
     GoRoute(
       path: Routes.authWrapper,
@@ -110,6 +153,24 @@ final GoRouter router = GoRouter(
               path: Routes.home, // Nested path for dashboard
               builder:
                   (context, state) => SnapVideoScroll(), // Dashboard widget
+              routes: [
+                GoRoute(
+                  path: Routes.fullScreenVideo,
+                  builder: (context, state) {
+                    final videoUrl = state.uri.queryParameters['url'] ?? '';
+                    final fordownload =
+                        int.tryParse(
+                          state.uri.queryParameters['fordownload'] ?? '0',
+                        ) ??
+                        0;
+
+                    return FullScreenVideoPage(
+                      url: videoUrl,
+                      fordownload: fordownload,
+                    );
+                  },
+                ),
+              ],
             ),
           ],
         ),
@@ -122,14 +183,67 @@ final GoRouter router = GoRouter(
               builder: (context, state) => const ExplorePage(),
               routes: [
                 GoRoute(
-                  path:
-                      Routes.acceptedOrders, // Nested route under SplashScreen
+                  path: Routes.acceptedOrders, // Nested route under ExplorePage
                   builder: (context, state) => AcceptedOrdersPage(),
                 ),
                 GoRoute(
-                  path:
-                      Routes.assignedOrders, // Nested route under SplashScreen
+                  path: Routes.assignedOrders, // Nested route under ExplorePage
                   builder: (context, state) => AssignedOrdersPage(),
+                ),
+
+                // GoRoute(
+                //   path: Routes.fullScreenVideo, // e.g. 'video'
+                //   builder: (context, state) {
+                //     final videoUrl = state.uri.queryParameters['url'] ?? '';
+                //     final fordownload =
+                //         int.tryParse(
+                //           state.uri.queryParameters['fordownload'] ?? '0',
+                //         ) ??
+                //         0;
+
+                //     print('🎥 Extracted URL from query: $videoUrl');
+                //     return FullScreenVideoPage(
+                //       url: videoUrl,
+                //       fordownload: fordownload,
+                //     );
+                //   },
+                // ),
+                GoRoute(
+                  path: Routes.fullScreenVideo, // e.g. 'video'
+                  builder: (context, state) {
+                    // Safely read from state.extra
+                    final extra = state.extra as Map<String, dynamic>? ?? {};
+                    final videoUrl = extra['url'] ?? '';
+                    final fordownload = extra['fordownload'] ?? 0;
+
+                    print(
+                      '🎥 Extracted from extra → URL: $videoUrl | fordownload: $fordownload',
+                    );
+
+                    return FullScreenVideoPage(
+                      url: videoUrl,
+                      fordownload: fordownload,
+                    );
+                  },
+                ),
+
+                GoRoute(
+                  path: Routes.fullScreenImage, // e.g. 'image'
+                  builder: (context, state) {
+                    // Safely read from state.extra
+                    final extra = state.extra as Map<String, dynamic>? ?? {};
+                    final imageUrl = extra['url'] ?? '';
+                    final fordownload = extra['fordownload'] ?? 0;
+
+                    print(
+                      '🖼 Extracted from extra → URL: $imageUrl | fordownload: $fordownload',
+                    );
+
+                    return FullScreenImagePage(
+                      imageUrl: imageUrl,
+                      fordownload: fordownload,
+                    );
+                  },
                 ),
               ],
             ),

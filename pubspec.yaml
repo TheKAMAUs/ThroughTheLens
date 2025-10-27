@@ -76,6 +76,8 @@ dependencies:
   shelf: ^1.4.2
   shelf_router: ^1.1.4
   flutter_secure_storage: ^9.2.4
+  animated_text_kit: ^4.3.0
+  better_player_plus: ^1.0.8
 
 
 dev_dependencies:

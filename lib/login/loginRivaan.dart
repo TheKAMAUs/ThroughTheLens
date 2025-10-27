@@ -137,6 +137,7 @@ class LoginScreen extends StatelessWidget {
           ),
         );
       },
+
       logo: AssetImage('assets/IMG_20250929_080615.jpg'),
       theme: LoginTheme(
         primaryColor: Colors.teal.shade700,
@@ -146,7 +147,7 @@ class LoginScreen extends StatelessWidget {
           fontSize: 30,
           fontWeight: FontWeight.bold,
         ),
-        bodyStyle: TextStyle(color: Colors.white70),
+        bodyStyle: TextStyle(color: Colors.black87),
         cardTheme: CardTheme(
           color: const Color.fromARGB(255, 232, 215, 215),
           shape: RoundedRectangleBorder(
@@ -225,17 +226,17 @@ class LoginScreen extends StatelessWidget {
       navigateBackAfterRecovery: true,
       hideForgotPasswordButton: false,
 
-      // ✅ Social (if applicable)
-      loginProviders: [
-        LoginProvider(
-          icon: Icons.g_mobiledata,
-          label: 'Sign in with Google',
-          callback: () async {
-            // TODO: Add Google sign in
-            return null;
-          },
-        ),
-      ],
+      // // ✅ Social (if applicable)
+      // loginProviders: [
+      //   LoginProvider(
+      //     icon: Icons.g_mobiledata,
+      //     label: 'Sign in with Google',
+      //     callback: () async {
+      //       // TODO: Add Google sign in
+      //       return null;
+      //     },
+      //   ),
+      // ],
 
       // ✅ Initial mode & transitions
       initialAuthMode: AuthMode.login,
@@ -271,8 +272,26 @@ class LoginScreen extends StatelessWidget {
 
       // 👇 Customizes the hint texts
       messages: LoginMessages(
-        userHint: 'Enter your email',
-        passwordHint: 'Enter your password',
+        userHint: 'Your Email', // Placeholder for username/email field
+        passwordHint: 'Your Password', // Placeholder for password field
+        confirmPasswordHint: 'Confirm Key', // Sign up confirmation
+        loginButton: 'Login', // Login button text
+        signupButton: 'Sign Up', // Sign up button text
+        forgotPasswordButton: 'Forgot your password?', // link text
+        recoverPasswordButton: 'Send Reset Link', // reset button
+        goBackButton: '← Back',
+        confirmPasswordError: 'Passwords don’t match!',
+        recoverPasswordIntro: 'Enter your email to reset your password.',
+        recoverPasswordDescription: 'We’ll send a reset link to your inbox.',
+        flushbarTitleError: 'Oh no!',
+        flushbarTitleSuccess: 'Success!',
+        providersTitleFirst: 'Sign in using',
+        // // Here’s what you’re asking about ⤵
+        // loginAfterSignUp: true,
+        // additionalSignupFields: [],
+        // // Custom side messages:
+        // signupTerms: 'By signing up, you agree to our Terms & Conditions.',
+        // signupSuccess: 'Welcome aboard! 🎉',
       ),
     );
   }
