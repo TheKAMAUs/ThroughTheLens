@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 
 class Client extends Equatable {
   final String userId;
+  final String userUId;
   final String name;
   final String email;
   final String profileImageUrl;
@@ -18,7 +19,8 @@ class Client extends Equatable {
   final List<String>? orders;
 
   const Client({
-    required this.userId,
+    required this.userId, // <-- was missing in constructor
+    required this.userUId,
     required this.name,
     required this.email,
     required this.profileImageUrl,
@@ -36,7 +38,8 @@ class Client extends Equatable {
 
   factory Client.fromMap(Map<String, dynamic> map) {
     return Client(
-      userId: map['userId'] ?? '',
+      userId: map['userId'] ?? '', // <-- was missing
+      userUId: map['userUId'] ?? '',
       name: map['name'] ?? '',
       email: map['email'] ?? '',
       profileImageUrl: map['profileImageUrl'] ?? '',
@@ -69,14 +72,15 @@ class Client extends Equatable {
 
   Map<String, dynamic> toMap() {
     return {
-      'userId': userId,
+      'userId': userId, // <-- was missing
+      'userUId': userUId,
       'name': name,
       'email': email,
       'profileImageUrl': profileImageUrl,
       'role': role,
       'editor': editor,
       'bio': bio,
-      'phoneNumber': phoneNumber,
+      'phoneNumber': phoneNumber, // <-- new field
       'sampleVideos': sampleVideos,
       'editedVideos': editedVideos,
       'rating': rating,
@@ -87,7 +91,8 @@ class Client extends Equatable {
   }
 
   Client copyWith({
-    String? userId,
+    String? userId, // <-- was missing
+    String? userUId,
     String? name,
     String? email,
     String? profileImageUrl,
@@ -103,7 +108,8 @@ class Client extends Equatable {
     DateTime? createdAt,
   }) {
     return Client(
-      userId: userId ?? this.userId,
+      userId: userId ?? this.userId, // <-- was missing
+      userUId: userUId ?? this.userUId,
       name: name ?? this.name,
       email: email ?? this.email,
       profileImageUrl: profileImageUrl ?? this.profileImageUrl,
@@ -122,7 +128,8 @@ class Client extends Equatable {
 
   @override
   List<Object?> get props => [
-    userId,
+    userId, // <-- was missing
+    userUId,
     name,
     email,
     profileImageUrl,

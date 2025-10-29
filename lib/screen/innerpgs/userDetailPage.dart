@@ -48,99 +48,107 @@ class UserDetailPage extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 5),
-              globalUserDoc!.editor
-                  ? SizedBox.shrink()
-                  : SizedBox(
-                    width: double.infinity,
-                    child: InkWell(
-                      onTap: () async {
-                        // Handle "Become an Editor" logic here
-                        // Navigator.pushNamed(context, '/becomeEditor');
-                        final shouldbecomeeditor = await showDialog<bool>(
-                          context: context,
-                          builder:
-                              (context) => AlertDialog(
-                                title: Text(
-                                  'Become an Editor?',
-                                  selectionColor: Color.fromARGB(
-                                    255,
-                                    232,
-                                    226,
-                                    226,
+              // ✅ Conditional: Become Editor (shown only if NOT an editor)
+              if (!(globalUserDoc?.editor ?? false))
+                SizedBox(
+                  width: double.infinity,
+                  child: InkWell(
+                    onTap: () async {
+                      final shouldBecomeEditor = await showDialog<bool>(
+                        context: context,
+                        builder:
+                            (context) => AlertDialog(
+                              title: const Text('Become an Editor?'),
+                              content: const Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'As an editor, you will be responsible for:',
                                   ),
-                                ),
-                                content: const Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'As an editor, you will be responsible for:',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      '• Receiving and editing client videos.',
-                                    ),
-                                    Text(
-                                      '• Uploading the final edited versions.',
-                                    ),
-                                    Text(
-                                      '• Meeting deadlines and maintaining quality.',
-                                    ),
-                                    SizedBox(height: 12),
-                                    Text(
-                                      "🎉 Congratulations on taking the first step to join our team! let's GO!",
-                                      style: TextStyle(
-                                        fontStyle: FontStyle.italic,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed:
-                                        () => Navigator.pop(context, false),
-                                    child: const Text('Cancel'),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    '• Receiving and editing client videos.',
                                   ),
-                                  TextButton(
-                                    onPressed:
-                                        () => Navigator.pop(context, true),
-                                    child: const Text(
-                                      'continue',
-                                      style: TextStyle(color: Colors.green),
-                                    ),
+                                  Text(
+                                    '• Uploading the final edited versions.',
+                                  ),
+                                  Text(
+                                    '• Meeting deadlines and maintaining quality.',
+                                  ),
+                                  SizedBox(height: 12),
+                                  Text(
+                                    "🎉 Congratulations on taking the first step!",
                                   ),
                                 ],
                               ),
-                        );
-
-                        if (shouldbecomeeditor == true) {
-                          // );
-
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder:
-                                  (_) =>
-                                      EditorApplicationPage(), // ✅ don't use const
+                              actions: [
+                                TextButton(
+                                  onPressed:
+                                      () => Navigator.pop(context, false),
+                                  child: const Text('Cancel'),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context, true),
+                                  child: const Text(
+                                    'Continue',
+                                    style: TextStyle(color: Colors.green),
+                                  ),
+                                ),
+                              ],
                             ),
-                          );
-                        }
-                      },
-                      child: ListTile(
-                        title: Text(
-                          'Become an editor',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        tileColor: Colors.transparent,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4),
-                        ),
+                      );
+
+                      if (shouldBecomeEditor == true) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => EditorApplicationPage(),
+                          ),
+                        );
+                      }
+                    },
+                    child: ListTile(
+                      title: const Text(
+                        'Become an editor',
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
+                ),
+
+              const SizedBox(height: 10),
+
+              SizedBox(
+                width: double.infinity,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: () {
+                    context.push(Routes.nestedUserHistory);
+                  },
+                  child: Ink(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
+
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.history),
+                        const SizedBox(width: 8),
+                        const Text(
+                          "History",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
 
               const Spacer(),
               SizedBox(

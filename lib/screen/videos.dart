@@ -152,7 +152,7 @@ class _VideosPageState extends State<VideosPage>
   }
 
   Future<void> createOrder(
-    String? userId,
+    String? userUId,
     String? assignedEditorId,
     double? amount, {
     required List<File> videos,
@@ -164,7 +164,7 @@ class _VideosPageState extends State<VideosPage>
       // Step 2: Generate order data
       final order = OrderModel(
         orderId: _generateOrderId(), // or use Firestore auto ID
-        userId: userId,
+        userUId: userUId,
         assignedEditorId: assignedEditorId,
         paymentStatus: 'pending',
         amount: amount,
@@ -773,11 +773,7 @@ This will help us ensure we deliver a result that matches your vision.""",
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(
-                  Icons.payments_rounded,
-                  color: Colors.teal,
-                  size: 52,
-                ),
+                const Icon(Icons.info, color: Colors.blue, size: 48),
                 const SizedBox(height: 12),
                 Text(
                   response?["msg"] ?? "No message", // ✅ null safe

@@ -47,11 +47,15 @@ class _ExplorePageState extends State<ExplorePage> {
               // Go to settings
               context.push(Routes.nestedAccepted);
             }
+            if (value == 'history') {
+              // Go to settings
+              context.push(Routes.nestedAccepted);
+            }
           },
           itemBuilder:
               (context) => [
                 const PopupMenuItem(value: 'orders', child: Text('Orders')),
-                const PopupMenuItem(value: 'help', child: Text('Help')),
+                const PopupMenuItem(value: 'history', child: Text('History')),
               ],
         ),
       ],
@@ -352,148 +356,143 @@ class _ExplorePageState extends State<ExplorePage> {
     bool isUserAuthenticated = globalUserDoc != null;
     final mediaQuery = MediaQuery.of(context);
     final fem = mediaQuery.size.width / 428;
-    if (!isUserAuthenticated) {
-      return Scaffold(
-        body: BlocBuilder<VideoCubit, VideoState>(
-          builder: (context, state) {
-            if (state.isLoading) {
-              print('Loading videos...');
-              return const Center(child: CircularProgressIndicator());
-            } else if (state.hasError) {
-              print('Error loading videos');
-              return const Center(child: Text('Error loading videos 😕'));
-            } else if (state.downloadedVideos.isEmpty) {
-              print('No downloaded videos found.');
-              return const Center(child: Text('No videos available yet 🚧'));
-            }
 
-            // ✅ Shuffle and take only 3 videos
-            final List<Map<String, String>> videos = List.from(
-              state.downloadedVideos,
-            )..shuffle();
-            final List<Map<String, String>> limitedVideos =
-                videos.take(3).toList();
+    return Scaffold(
+      body: BlocBuilder<VideoCubit, VideoState>(
+        builder: (context, state) {
+          if (state.isLoading) {
+            print('Loading videos...');
+            return const Center(child: CircularProgressIndicator());
+          } else if (state.hasError) {
+            print('Error loading videos');
+            return const Center(child: Text('Error loading videos 😕'));
+          } else if (state.downloadedVideos.isEmpty) {
+            print('No downloaded videos found.');
+            return const Center(child: Text('No videos available yet 🚧'));
+          }
 
-            return SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 5),
+          // ✅ Shuffle and take only 3 videos
+          final List<Map<String, String>> videos = List.from(
+            state.downloadedVideos,
+          )..shuffle();
+          final List<Map<String, String>> limitedVideos =
+              videos.take(3).toList();
 
-                  // 👤 User placeholder
-                  Center(child: noUser),
+          return SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 5),
 
-                  const SizedBox(height: 15),
+                // 👤 User placeholder
+                Center(child: noUser),
 
-                  // 🌈 Animated Welcome Text Container
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF1E1E2C), Color(0xFF2E2E48)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.4),
-                          blurRadius: 12,
-                          offset: const Offset(0, 6),
-                        ),
-                      ],
+                const SizedBox(height: 15),
+
+                // 🌈 Animated Welcome Text Container
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF1E1E2C), Color(0xFF2E2E48)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                    child: DefaultTextStyle(
-                      style: const TextStyle(
-                        fontSize: 18,
-                        height: 1.4,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                      child: AnimatedTextKit(
-                        animatedTexts: [
-                          TypewriterAnimatedText(
-                            '🌟 Welcome! 👋\n\n'
-                            'You’re about to start your creative journey 🎬✨\n\n'
-                            '🎨 Choose your favorite editor — someone who’ll turn your photos and videos into stunning masterpieces.\n\n'
-                            '📸 Tip: Watch the short clips below to learn how to take perfect shots —\n'
-                            '💡 focus on good lighting, 📐 great angles, and 🔍 crystal clarity!',
-                            cursor: '💡',
-                            speed: Duration(milliseconds: 60),
-                          ),
-                        ],
-                        totalRepeatCount: 3,
-                        pause: Duration(seconds: 60),
-                        displayFullTextOnTap: true,
-                        stopPauseOnTap: true,
-                        controller: typewriterController,
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 15),
-
-                  // 🎥 Videos Section Title
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: const [
-                      Icon(
-                        Icons.play_circle_fill,
-                        color: Colors.amber,
-                        size: 28,
-                      ),
-                      SizedBox(width: 8),
-                      Text(
-                        "Watch sample videos below 👇",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                        ),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.4),
+                        blurRadius: 12,
+                        offset: const Offset(0, 6),
                       ),
                     ],
                   ),
-
-                  const SizedBox(height: 15),
-
-                  // 🎬 List of Sample Videos
-                  ListView.builder(
-                    itemCount: limitedVideos.length,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      final videoData = limitedVideos[index];
-                      final videoUrl = videoData['videoUrl']!;
-                      final productName = videoData['firstName']!;
-                      final description = videoData['description']!;
-
-                      return SizedBox(
-                        height: MediaQuery.of(context).size.height / 3,
-                        child: VideoPlayerItem(
-                          videoUrl: videoUrl,
-                          fem: fem,
-                          productName: productName,
-                          description: description,
-                          index: index,
-                          onPageChanged: (_) {},
-                          isPreloaded: true,
+                  child: DefaultTextStyle(
+                    style: const TextStyle(
+                      fontSize: 18,
+                      height: 1.4,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                    child: AnimatedTextKit(
+                      animatedTexts: [
+                        TypewriterAnimatedText(
+                          '🌟 Welcome! 👋\n\n'
+                          'You’re about to start your creative journey 🎬✨\n\n'
+                          '🎨 Choose your favorite editor — someone who’ll turn your photos and videos into stunning masterpieces.\n\n'
+                          '📸 Tip: Watch the short clips below to learn how to take perfect shots —\n'
+                          '💡 focus on good lighting, 📐 great angles, and 🔍 crystal clarity!',
+                          cursor: '💡',
+                          speed: Duration(milliseconds: 60),
                         ),
-                      );
-                    },
+                      ],
+                      totalRepeatCount: 3,
+                      pause: Duration(seconds: 60),
+                      displayFullTextOnTap: true,
+                      stopPauseOnTap: true,
+                      controller: typewriterController,
+                    ),
                   ),
-                ],
-              ),
-            );
-          },
-        ),
-      );
-    }
+                ),
 
-    // ✅ If authenticated → show appropriate UI
-    return Scaffold(
-      appBar: globalUserDoc!.editor ? editorHeader : clientHeader,
-      body: globalUserDoc!.editor ? editorBody : clientBody,
+                const SizedBox(height: 15),
+
+                // 🎥 Videos Section Title
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: const [
+                    Icon(Icons.play_circle_fill, color: Colors.amber, size: 28),
+                    SizedBox(width: 8),
+                    Text(
+                      "Watch sample videos below 👇",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 15),
+
+                // 🎬 List of Sample Videos
+                ListView.builder(
+                  itemCount: limitedVideos.length,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    final videoData = limitedVideos[index];
+                    final videoUrl = videoData['videoUrl']!;
+                    final productName = videoData['firstName']!;
+                    final description = videoData['description']!;
+
+                    return SizedBox(
+                      height: MediaQuery.of(context).size.height / 3,
+                      child: VideoPlayerItem(
+                        videoUrl: videoUrl,
+                        fem: fem,
+                        productName: productName,
+                        description: description,
+                        index: index,
+                        onPageChanged: (_) {},
+                        isPreloaded: true,
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
+
+    // // ✅ If authenticated → show appropriate UI
+    // return Scaffold(
+    //   appBar: globalUserDoc!.editor ? editorHeader : clientHeader,
+    //   body: globalUserDoc!.editor ? editorBody : clientBody,
+    // );
   }
 
   void showOrderAcceptanceDialog(
@@ -524,11 +523,11 @@ class _ExplorePageState extends State<ExplorePage> {
                   Navigator.of(context).pop(); // Close dialog
                   // Optional: Add logic using order or client if needed
                   if (client != null) {
-                    // context.push(Routes.uploadwitheditor, extra: client.userId);
+                    // context.push(Routes.uploadwitheditor, extra: client.userUId);
 
                     final replacedRoute = Routes.uploadwitheditor.replaceFirst(
                       ':assignedEditorId',
-                      client.userId,
+                      client.userUId,
                     );
 
                     print('✅ Navigating to: $replacedRoute');

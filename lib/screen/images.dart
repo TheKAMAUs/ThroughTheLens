@@ -74,7 +74,7 @@ class _ImagesPageState extends State<ImagesPage>
   }
 
   Future<void> createOrder(
-    String? userId,
+    String? userUId,
     String? assignedEditorId,
     double? amount, {
     required List<File> imageFiles,
@@ -86,7 +86,7 @@ class _ImagesPageState extends State<ImagesPage>
       // Step 2: Generate order data
       final order = OrderModel(
         orderId: _generateOrderId(), // or use Firestore auto ID
-        userId: userId,
+        userUId: userUId,
         assignedEditorId: assignedEditorId,
         paymentStatus: 'pending',
         amount: amount,

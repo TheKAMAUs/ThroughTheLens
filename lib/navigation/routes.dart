@@ -20,10 +20,17 @@ class Routes {
   static const String explore = '/explore';
   static const String upload = '/upload';
   static const String uploadwitheditor = '/upload/:assignedEditorId';
-  static const String profile = '/profileSettings';
 
-  static const String userDetailPage = '/details';
-  static const String profilEdit = '/profilEdit';
+  static const String profile = '/profile';
+  static const String profilEdit = 'edit'; // relative to profile
+  static const String userDetailPage = 'details'; // relative to profile
+  static const String userHistory = 'history';
+
+  // Nested (relative to profile)
+  static const String nestedProfileEdit = '/profile/edit';
+  static const String nestedUserDetail = '/profile/details';
+  static const String nestedUserHistory = '/profile/details/history';
+
   static const String support = '/support';
   static const String videos = '/videos';
   static const String videoswithEditor = 'videos';

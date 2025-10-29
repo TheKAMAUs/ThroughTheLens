@@ -7,6 +7,7 @@ import 'package:memoriesweb/data/auth_service.dart';
 import 'package:memoriesweb/model/clientmodel.dart';
 import 'package:memoriesweb/navigation/routes.dart';
 import 'package:memoriesweb/preferences_service.dart';
+import 'package:nanoid/nanoid.dart';
 
 class LoginScreen extends StatelessWidget {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -37,7 +38,8 @@ class LoginScreen extends StatelessWidget {
 
       // 3. Create UserModel object
       final newUser = Client(
-        userId: user.uid,
+        userId: _generateUserId(),
+        userUId: user.uid,
         name: fullName,
         email: user.email ?? '',
         profileImageUrl: '', // 👈 leave profile image empty
@@ -61,6 +63,10 @@ class LoginScreen extends StatelessWidget {
     } on FirebaseAuthException catch (e) {
       return _handleAuthError(e.code);
     }
+  }
+
+  String _generateUserId() {
+    return customAlphabet('1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ', 8);
   }
 
   // Email/Password Sign In Logic
@@ -205,21 +211,15 @@ class LoginScreen extends StatelessWidget {
         ),
       ],
 
-      // // ✅ TOS + Privacy
-      // termsOfService: [
-      //   TermOfService(
-      //     id: 'general-term',
-      //     mandatory: true,
-      //     text: 'I accept the terms of service',
-      //     linkUrl: 'https://goodgov.com/terms',
-      //   ),
-      //   TermOfService(
-      //     id: 'privacy-policy',
-      //     mandatory: true,
-      //     text: 'Privacy Policy',
-      //     linkUrl: 'https://goodgov.com/privacy',
-      //   ),
-      // ],
+      // ✅ TOS + Privacy
+      termsOfService: [
+        TermOfService(
+          id: 'privacy-policy',
+          mandatory: true,
+          text: 'Privacy Policy',
+          linkUrl: 'https://memoriesprivacy.pages.dev/',
+        ),
+      ],
 
       // ✅ Forgot password UX
       onRecoverPassword: _recoverPassword,

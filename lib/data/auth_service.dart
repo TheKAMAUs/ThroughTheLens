@@ -15,14 +15,15 @@ class AuthService {
   /// Fetch the client from the 'clients' collection and cache it
   Future<Client?> fetchClient({String? uid}) async {
     try {
-      final userId = uid ?? _auth.currentUser?.uid;
+      final userUId = uid ?? _auth.currentUser?.uid;
 
-      if (userId == null) {
+      if (userUId == null) {
         print("⚠️ No authenticated user or UID provided.");
         return null;
       }
 
-      final snapshot = await _firestore.collection('clients').doc(userId).get();
+      final snapshot =
+          await _firestore.collection('clients').doc(userUId).get();
 
       if (snapshot.exists && snapshot.data() != null) {
         _client = Client.fromMap(snapshot.data()!); // 👈 cache the client
@@ -45,7 +46,7 @@ class AuthService {
       globalUserDoc = client;
       await _firestore
           .collection('clients')
-          .doc(client.userId) // safer than using globalUserDoc again
+          .doc(client.userUId) // safer than using globalUserDoc again
           .update(client.toMap());
     }
   }

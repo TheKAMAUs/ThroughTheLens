@@ -126,7 +126,7 @@ class MpesaDarajaApi {
       // final updatedUser = globalUserDoc?.copyWith(phoneNumber: phoneInt);
       // final clientDocRef = FirebaseFirestore.instance
       //     .collection('clients')
-      //     .doc(globalUserDoc?.userId);
+      //     .doc(globalUserDoc?.userUId);
       // await clientDocRef.update({'phoneNumber': updatedUser?.phoneNumber});
       // final auth = AuthService();
       // await auth.fetchClient();
@@ -188,7 +188,7 @@ class MpesaDarajaApi {
 
       // final clientDocRef = FirebaseFirestore.instance
       //     .collection('clients')
-      //     .doc(globalUserDoc?.userId);
+      //     .doc(globalUserDoc?.userUId);
 
       // await clientDocRef.update({'phoneNumber': phoneInt});
 

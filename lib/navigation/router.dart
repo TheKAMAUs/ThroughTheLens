@@ -14,6 +14,7 @@ import 'package:memoriesweb/screen/forClients/assignedOrders.dart';
 import 'package:memoriesweb/screen/forEditors/acceptedorders.dart';
 import 'package:memoriesweb/screen/innerpgs/fullScreenImagePage.dart';
 import 'package:memoriesweb/screen/innerpgs/fullScreenVideoPage.dart';
+import 'package:memoriesweb/screen/innerpgs/history.dart';
 
 import 'package:memoriesweb/screen/innerpgs/profileEditPage.dart';
 import 'package:memoriesweb/screen/innerpgs/snapStyleVideoScroll.dart';
@@ -175,7 +176,7 @@ final GoRouter router = GoRouter(
           ],
         ),
 
-        // Ad Marketplace Route
+        // // Ad Marketplace Route
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -261,9 +262,38 @@ final GoRouter router = GoRouter(
         // Profile Settings Route
         StatefulShellBranch(
           routes: [
+            // Parent /profileSettings page
             GoRoute(
-              path: Routes.profile,
+              path: Routes.profile, // '/profileSettings'
               builder: (context, state) => ProfilePage(isSelfPage: true),
+              routes: [
+                // Nested route: edit profile
+                GoRoute(
+                  path: Routes.profilEdit, // becomes '/profileSettings/edit'
+                  builder: (context, state) => ProfileEditPage(),
+                ),
+                // Nested route: user detail
+                GoRoute(
+                  path:
+                      Routes
+                          .userDetailPage, // becomes '/profileSettings/user/:id'
+                  builder: (context, state) {
+                    return UserDetailPage();
+                  },
+
+                  routes: [
+                    // ✅ History Page nested inside User Detail
+                    GoRoute(
+                      path:
+                          Routes
+                              .userHistory, // /profileSettings/user/:id/history
+                      builder: (context, state) {
+                        return HistoryPage();
+                      },
+                    ),
+                  ],
+                ),
+              ],
             ),
           ],
         ),

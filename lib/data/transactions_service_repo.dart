@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:memoriesweb/data/auth_service.dart';
 import 'package:memoriesweb/data/firebase_storage_repo.dart';
@@ -12,7 +13,7 @@ class TransServiceRepo {
   final FirebaseStorageRepo storage = FirebaseStorageRepo();
 
   Future<void> acceptOrder(String? orderId) async {
-    final user = globalUserDoc?.userId;
+    final user = globalUserDoc?.userUId;
     if (user == null) throw Exception('User not logged in');
 
     final docRef = fire.collection('orders').doc(orderId);
@@ -34,7 +35,7 @@ class TransServiceRepo {
     required String path,
     required String fileName,
   }) async {
-    final user = globalUserDoc?.userId;
+    final user = globalUserDoc?.userUId;
     if (user == null) throw Exception('User not logged in');
 
     try {
@@ -52,6 +53,8 @@ class TransServiceRepo {
         status: 'completed',
         editedBy: user,
         assignedEditorId: null,
+        complaint: false,
+        paymentStatus: 'paid',
       );
 
       final docRef = fire.collection('orders').doc(order?.orderId);
@@ -60,7 +63,7 @@ class TransServiceRepo {
 
       // update the client
 
-      final clientRef = fire.collection('clients').doc(order?.userId);
+      final clientRef = fire.collection('clients').doc(order?.userUId);
 
       await clientRef.update({
         'editedVideos': FieldValue.arrayUnion([downloadUrl]),
@@ -144,6 +147,14 @@ class TransServiceRepo {
       // =========================
       if ((path != null && path.isNotEmpty) &&
           (fileName != null && fileName.isNotEmpty)) {
+        if ((order.noComplaints ?? 0) >= 2) {
+          EasyLoading.showInfo(
+            "You cannot file more than two complaints for this order.",
+            duration: const Duration(seconds: 5),
+          );
+          return;
+        }
+
         print("📤 Uploading complaint video...");
 
         final downloadUrl = await storage.uploadPostVideoMobile(path, fileName);
@@ -157,6 +168,8 @@ class TransServiceRepo {
         final updatedOrder = order.copyWith(
           videoUrls: [...?order.videoUrls, downloadUrl],
           complaint: true,
+          noComplaints: (order.noComplaints ?? 0) + 1,
+          paymentStatus: 'pending',
         );
 
         await fire
@@ -238,7 +251,7 @@ class TransServiceRepo {
 
   //     final clientDocRef = FirebaseFirestore.instance
   //         .collection('clients')
-  //         .doc(globalUserDoc?.userId);
+  //         .doc(globalUserDoc?.userUId);
 
   //     await clientDocRef.update({'phoneNumber': phoneInt});
 

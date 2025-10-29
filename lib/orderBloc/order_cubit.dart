@@ -102,9 +102,9 @@ class OrderCubit extends Cubit<OrderState> {
 
         final order = OrderModel(
           orderId: _generateOrderId(),
-          userId: globalUserDoc?.userId,
+          userUId: globalUserDoc?.userUId,
           assignedEditorId: assignedEditorId,
-          paymentStatus: 'pending',
+          paymentStatus: 'paid',
           status: 'pending',
           title: title,
           description: desc,
@@ -138,9 +138,9 @@ class OrderCubit extends Cubit<OrderState> {
 
       final order = OrderModel(
         orderId: _generateOrderId(),
-        userId: globalUserDoc?.userId,
+        userUId: globalUserDoc?.userUId,
         assignedEditorId: assignedEditorId,
-        paymentStatus: 'pending',
+        paymentStatus: 'paid',
         status: 'pending',
         title: title,
         description: desc,
@@ -171,9 +171,9 @@ class OrderCubit extends Cubit<OrderState> {
 
       final order = OrderModel(
         orderId: _generateOrderId(),
-        userId: globalUserDoc?.userId,
+        userUId: globalUserDoc?.userUId,
         assignedEditorId: assignedEditorId,
-        paymentStatus: 'pending',
+        paymentStatus: 'paid',
         status: 'pending',
         title: title,
         description: desc,

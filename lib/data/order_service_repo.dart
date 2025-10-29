@@ -19,7 +19,7 @@ class OrderServiceRepo {
       // 2. Save the updated client to Firestore
       await fire
           .collection('clients')
-          .doc(globalUserDoc?.userId)
+          .doc(globalUserDoc?.userUId)
           .set(updatedClient.toMap());
     }
     await docRef.set(newOrder.toMap());
@@ -60,6 +60,21 @@ class OrderServiceRepo {
     } else {
       return null;
     }
+  }
+
+  Future<List<OrderModel>> fetchOrdersfor_HISTORY() async {
+    final userUId = globalUserDoc?.userUId;
+    if (userUId == null || userUId.isEmpty) return [];
+
+    final snapshot =
+        await fire
+            .collection('orders')
+            .where('editedBy', isEqualTo: userUId)
+            .get();
+
+    return snapshot.docs
+        .map((doc) => OrderModel.fromMap(doc.data(), doc.id))
+        .toList();
   }
 
   Future<List<OrderModel>> getOrderByAssignedEditorId(

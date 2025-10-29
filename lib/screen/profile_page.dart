@@ -55,7 +55,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               onTap: () {
                 if (globalUserDoc!.editor) {
-                  context.push(Routes.profilEdit);
+                  context.push(Routes.nestedProfileEdit);
                 }
               },
             )
@@ -213,7 +213,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: const Icon(Icons.more_horiz, size: 24),
                     ),
                     onTap: () {
-                      context.push(Routes.userDetailPage);
+                      context.push(Routes.nestedUserDetail);
                     },
                   ),
                 ),

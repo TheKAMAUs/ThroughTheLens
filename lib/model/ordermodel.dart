@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 
 class OrderModel extends Equatable {
   final String? orderId;
-  final String? userId;
+  final String? userUId;
   final String? assignedEditorId;
   final String? paymentStatus; // pending, paid, failed
   final String? status; // pending, paid, failed
@@ -22,7 +22,7 @@ class OrderModel extends Equatable {
   const OrderModel({
     required this.imageUrls,
     this.orderId,
-    this.userId,
+    this.userUId,
     this.assignedEditorId,
     this.paymentStatus,
     this.status,
@@ -41,7 +41,7 @@ class OrderModel extends Equatable {
   factory OrderModel.fromMap(Map<String, dynamic> map, String id) {
     return OrderModel(
       orderId: id,
-      userId: map['userId'] ?? '',
+      userUId: map['userUId'] ?? '',
       assignedEditorId: map['assignedEditorId'] ?? '',
       paymentStatus: map['paymentStatus'] ?? 'pending',
       status: map['status'] ?? 'pending',
@@ -62,7 +62,7 @@ class OrderModel extends Equatable {
   Map<String, dynamic> toMap() {
     return {
       'orderId': orderId,
-      'userId': userId,
+      'userUId': userUId,
       'assignedEditorId': assignedEditorId,
       'paymentStatus': paymentStatus,
       'status': status,
@@ -82,7 +82,7 @@ class OrderModel extends Equatable {
 
   OrderModel copyWith({
     String? orderId,
-    String? userId,
+    String? userUId,
     String? assignedEditorId,
     String? paymentStatus,
     String? status,
@@ -100,7 +100,7 @@ class OrderModel extends Equatable {
   }) {
     return OrderModel(
       orderId: orderId ?? this.orderId,
-      userId: userId ?? this.userId,
+      userUId: userUId ?? this.userUId,
       assignedEditorId: assignedEditorId ?? this.assignedEditorId,
       paymentStatus: paymentStatus ?? this.paymentStatus,
       status: status ?? this.status,
@@ -121,7 +121,7 @@ class OrderModel extends Equatable {
   @override
   List<Object?> get props => [
     orderId,
-    userId,
+    userUId,
     assignedEditorId,
     paymentStatus,
     status,

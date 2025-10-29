@@ -7,10 +7,10 @@
 
 //   ProfileCubit(this.userRepo) : super(ProfileInitial());
 
-//   Future<void> loadProfile(String userId) async {
+//   Future<void> loadProfile(String userUId) async {
 //     emit(ProfileLoading());
 //     try {
-//       final user = await userRepo.getUserById(userId);
+//       final user = await userRepo.getUserById(userUId);
 //       emit(ProfileLoaded(user));
 //     } catch (e) {
 //       emit(ProfileError("Failed to load profile: $e"));

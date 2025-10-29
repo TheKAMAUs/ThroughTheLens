@@ -28,7 +28,7 @@ class _AcceptedOrdersPageState extends State<AcceptedOrdersPage> {
   void initState() {
     super.initState();
     _acceptedOrdersFuture = orders.getOrderByAssignedEditorId(
-      globalUserDoc!.userId,
+      globalUserDoc!.userUId,
     );
   }
 
