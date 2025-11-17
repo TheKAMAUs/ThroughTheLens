@@ -5,6 +5,7 @@ import 'package:memoriesweb/data/auth_service.dart';
 
 import 'package:memoriesweb/data/order_service_repo.dart';
 import 'package:memoriesweb/navigation/routes.dart';
+import 'package:memoriesweb/responsive/constrained_scaffold.dart';
 import 'package:memoriesweb/screen/innerpgs/fullScreenVideoPage.dart';
 import 'package:memoriesweb/screen/innerpgs/profileEditPage.dart';
 import 'package:memoriesweb/screen/innerpgs/smallVideo.dart';
@@ -55,7 +56,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               onTap: () {
                 if (globalUserDoc!.editor) {
-                  context.push(Routes.nestedProfileEdit);
+                  context.push(RoutesEnum.nestedProfileEdit.path);
                 }
               },
             )
@@ -154,9 +155,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: const <Widget>[
-                    TextGroup('356', 'Following'),
-                    TextGroup('1.45M', 'Followers'),
-                    TextGroup('14.23M', 'Likes'),
+                    TextGroup('356', 'Following', color: Colors.white),
+                    TextGroup('1.45M', 'Followers', color: Colors.white),
+                    TextGroup('14.23M', 'Likes', color: Colors.white),
                   ],
                 ),
               ),
@@ -176,85 +177,92 @@ class _ProfilePageState extends State<ProfilePage> {
       ],
     );
 
-    return isUserAvailable
-        ? Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              colors: <Color>[Colors.orange, Colors.red],
-            ),
-          ),
-          child: Stack(
-            alignment: Alignment.topCenter,
-            children: <Widget>[
-              Container(
-                margin: const EdgeInsets.only(top: 400),
-                height: double.infinity,
-                width: double.infinity,
-                color: ColorPlate.back1,
-              ),
-              body,
-              Container(
-                margin: const EdgeInsets.only(top: 20),
-                height: 62,
-                child: TopToolRow(
-                  canPop: widget.canPop,
-                  onPop: widget.onPop,
-                  right: Tapped(
-                    child: Container(
-                      width: 30,
-                      height: 30,
-                      margin: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.36),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      alignment: Alignment.center,
-                      child: const Icon(Icons.more_horiz, size: 24),
+    return ConstrainedScaffold(
+      body:
+          isUserAvailable
+              ? Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    colors: <Color>[Colors.orange, Colors.red],
+                  ),
+                ),
+                child: Stack(
+                  alignment: Alignment.topCenter,
+                  children: <Widget>[
+                    Container(
+                      margin: const EdgeInsets.only(top: 400),
+                      height: double.infinity,
+                      width: double.infinity,
+                      color: ColorPlate.back1,
                     ),
-                    onTap: () {
-                      context.push(Routes.nestedUserDetail);
-                    },
-                  ),
+                    body,
+                    Container(
+                      margin: const EdgeInsets.only(top: 20),
+                      height: 62,
+                      child: TopToolRow(
+                        canPop: widget.canPop,
+                        onPop: widget.onPop,
+                        right: Tapped(
+                          child: Container(
+                            width: 30,
+                            height: 30,
+                            margin: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.36),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            alignment: Alignment.center,
+                            child: const Icon(Icons.more_horiz, size: 24),
+                          ),
+                          onTap: () {
+                            context.push(RoutesEnum.nestedUserDetail.path);
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+              : Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.person_outline,
+                      size: 100,
+                      color: Colors.grey,
+                    ),
+                    const SizedBox(height: 20),
+                    const Text(
+                      'You are not logged in',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    const SizedBox(height: 30),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        context.push(
+                          RoutesEnum.loginPageRIV.path,
+                        ); // 👈 navigate to your login screen
+                      },
+                      icon: const Icon(Icons.login),
+                      label: const Text('Login'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orange,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 40,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        )
-        : Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.person_outline, size: 100, color: Colors.grey),
-              const SizedBox(height: 20),
-              const Text(
-                'You are not logged in',
-                style: TextStyle(fontSize: 18),
-              ),
-              const SizedBox(height: 30),
-              ElevatedButton.icon(
-                onPressed: () {
-                  context.push(
-                    Routes.loginPageRIV,
-                  ); // 👈 navigate to your login screen
-                },
-                icon: const Icon(Icons.login),
-                label: const Text('Login'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 40,
-                    vertical: 12,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
+    );
   }
 }
 

@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
-import 'package:intl/intl.dart';
 
 import 'package:memoriesweb/data/auth_service.dart';
 import 'package:memoriesweb/data/payment_Service.dart';

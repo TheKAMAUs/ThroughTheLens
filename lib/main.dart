@@ -1,4 +1,3 @@
-import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -7,7 +6,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:memoriesweb/app/app.dart';
+
 import 'package:flutter/material.dart';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -19,8 +18,7 @@ import 'package:memoriesweb/data/payment_Repo.dart';
 
 import 'package:memoriesweb/firebase_options.dart';
 import 'package:memoriesweb/navigation/router.dart';
-import 'package:memoriesweb/network/bloc/network_bloc.dart';
-import 'package:memoriesweb/network/bloc/network_state.dart';
+
 import 'package:memoriesweb/orderBloc/order_cubit.dart';
 import 'package:memoriesweb/photo/photo_picker.dart';
 import 'package:memoriesweb/theme/themebloc.dart';
@@ -61,7 +59,7 @@ Future<void> main() async {
         BlocProvider<OrderCubit>(create: (_) => OrderCubit(_storage, fire)),
         // BlocProvider(create: (_) => NetworkCubit()),
         BlocProvider<ThemeCubit>(create: (_) => ThemeCubit()),
-        BlocProvider<VideoCubit>(create: (_) => VideoCubit()..fetchVideos()),
+        BlocProvider<VideoCubit>(create: (_) => VideoCubit()..getHomeVideos()),
       ],
       child: const MyApp(), // <- just build App here
     ),
@@ -92,7 +90,7 @@ class MyApp extends StatelessWidget {
       builder:
           (context, currentTheme) => MaterialApp.router(
             debugShowCheckedModeBanner: false,
-            title: "memoriesweb",
+            title: "memories",
             routerDelegate: router.routerDelegate,
             routeInformationParser: router.routeInformationParser,
             routeInformationProvider: router.routeInformationProvider,

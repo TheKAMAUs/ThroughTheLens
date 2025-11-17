@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:memoriesweb/navigation/routes.dart';
+import 'package:memoriesweb/responsive/constrained_scaffold.dart';
 
 import 'package:nanoid/nanoid.dart';
 
@@ -17,7 +18,7 @@ import 'package:memoriesweb/orderBloc/order_cubit.dart';
 class UploadPage extends StatelessWidget {
   final String? assignedEditorId;
 
-  const UploadPage({super.key, this.assignedEditorId});
+  const UploadPage({super.key, this.assignedEditorId = ''});
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +58,12 @@ class _ImagesPageState extends State<_ImagesPage>
         _images.add(File(pickedFile.path));
       });
     }
+  }
+
+  int calculateImagesValue() {
+    int count = _images.length;
+    int result = count * 100;
+    return result;
   }
 
   String _generateOrderId() {
@@ -124,7 +131,7 @@ class _ImagesPageState extends State<_ImagesPage>
   Widget build(BuildContext context) {
     super.build(context);
 
-    return Scaffold(
+    return ConstrainedScaffold(
       appBar: AppBar(title: const Text('Upload images')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(10.0),
@@ -188,10 +195,11 @@ class _ImagesPageState extends State<_ImagesPage>
 
                 if (widget.assignedEditorId != null &&
                     widget.assignedEditorId!.isNotEmpty) {
-                  final replacedRoute = Routes.nestedWithEditor.replaceFirst(
-                    ':assignedEditorId',
-                    widget.assignedEditorId!,
-                  );
+                  final replacedRoute = RoutesEnum.nestedWithEditor.path
+                      .replaceFirst(
+                        ':assignedEditorId',
+                        widget.assignedEditorId!,
+                      );
 
                   print('✅ Navigating to: $replacedRoute');
 
@@ -200,7 +208,12 @@ class _ImagesPageState extends State<_ImagesPage>
                   print(
                     '⚠️ assignedEditorId is null or empty. Navigating to default videos route.',
                   );
-                  context.push(Routes.videos);
+
+                  print('${widget.assignedEditorId}');
+                  context.push(
+                    RoutesEnum.nestedNormalUpload.path,
+                    extra: {'imagesAmount': calculateImagesValue()},
+                  );
                 }
 
                 print('Navigation complete. Showing snackbar...');

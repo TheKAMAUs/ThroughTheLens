@@ -148,7 +148,9 @@ class _AcceptedOrdersPageState extends State<AcceptedOrdersPage> {
                                       child: GestureDetector(
                                         onTap: () {
                                           context.push(
-                                            Routes.nestedExPFullScreenImage,
+                                            RoutesEnum
+                                                .nestedExpFullScreenImage
+                                                .path,
                                             extra: {
                                               'url': img,
                                               'fordownload': 1,
@@ -265,7 +267,9 @@ class _AcceptedOrdersPageState extends State<AcceptedOrdersPage> {
                                         //     descriptionController.text.trim(),
                                       );
                                       // Now push the route with callback
-                                      final replacedRoute = Routes.videoEdited
+                                      final replacedRoute = RoutesEnum
+                                          .videoEdited
+                                          .path
                                           .replaceFirst(':edited', 'true');
 
                                       print('Navigating to Editor page...');

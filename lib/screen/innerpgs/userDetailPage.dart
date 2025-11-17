@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:memoriesweb/data/auth_service.dart';
 import 'package:memoriesweb/navigation/routes.dart';
 import 'package:memoriesweb/preferences_service.dart';
+import 'package:memoriesweb/responsive/constrained_scaffold.dart';
 
 import 'package:memoriesweb/screen/editorApplicationPage.dart';
 
@@ -22,7 +23,7 @@ class UserDetailPage extends StatelessWidget {
 
     late bool isDarkMode = themeCubit.isDarkMode;
 
-    return Scaffold(
+    return ConstrainedScaffold(
       body: SafeArea(
         child: Container(
           height: double.infinity,
@@ -124,7 +125,7 @@ class UserDetailPage extends StatelessWidget {
                 child: InkWell(
                   borderRadius: BorderRadius.circular(12),
                   onTap: () {
-                    context.push(Routes.nestedUserHistory);
+                    context.push(RoutesEnum.nestedUserHistory.path);
                   },
                   child: Ink(
                     padding: const EdgeInsets.symmetric(
@@ -182,7 +183,9 @@ class UserDetailPage extends StatelessWidget {
                     if (shouldSignOut == true) {
                       await PreferencesService.clearUid();
                       await authService.signOut();
-                      Future.microtask(() => context.go(Routes.loginPageRIV));
+                      Future.microtask(
+                        () => context.go(RoutesEnum.loginPageRIV.path),
+                      );
                     }
                   },
                   child: ListTile(

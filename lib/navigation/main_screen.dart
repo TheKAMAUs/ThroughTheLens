@@ -3,6 +3,7 @@ import 'package:memoriesweb/navigation/destination.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:memoriesweb/responsive/constrained_scaffold.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({required this.navigationShell, Key? key})
@@ -12,7 +13,7 @@ class MainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ConstrainedScaffold(
       extendBody: true, // 👈🏽 lets nav bar float above background
 
       body: SafeArea(

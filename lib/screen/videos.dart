@@ -15,6 +15,7 @@ import 'package:memoriesweb/navigation/routes.dart';
 import 'package:memoriesweb/orderBloc/order_cubit.dart';
 import 'package:memoriesweb/orderBloc/order_state.dart';
 import 'package:memoriesweb/preferences_service.dart';
+import 'package:memoriesweb/responsive/constrained_scaffold.dart';
 import 'package:nanoid/nanoid.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -22,14 +23,17 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 class VideosPage extends StatefulWidget {
   final String? assignedEditorId;
   final bool edited;
-  final bool complaint; // New parameter
+  final bool complaint;
+  final int imagesAmount; // 👈 new parameter
   final void Function(String path, String fileName)? onDone;
   final void Function(String path, String fileName)? onComplaint;
+
   const VideosPage({
     super.key,
     this.assignedEditorId,
-    this.edited = false, // Default value set to false
-    this.complaint = false, // Default value set to false
+    this.edited = false,
+    this.complaint = false,
+    this.imagesAmount = 0, // 👈 default value
     this.onDone,
     this.onComplaint,
   });
@@ -87,6 +91,13 @@ class _VideosPageState extends State<VideosPage>
         video = videoFile;
       }
     });
+  }
+
+  int calculateVideoValue() {
+    int count = _videos.length;
+    int amount = count * 150;
+    int result = widget.imagesAmount + amount;
+    return result;
   }
 
   String _generateOrderId() {
@@ -308,7 +319,7 @@ class _VideosPageState extends State<VideosPage>
       },
       builder: (context, state) {
         if (!widget.edited && !widget.complaint) {
-          return Scaffold(
+          return ConstrainedScaffold(
             appBar: AppBar(title: const Text('Upload Videos')),
             body: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
@@ -506,7 +517,7 @@ This helps our editors match your style and vision.
                       onPressed: () async {
                         bool isUserAuthenticated = globalUserDoc != null;
                         if (!isUserAuthenticated) {
-                          context.go(Routes.loginPageRIV);
+                          context.go(RoutesEnum.loginPageRIV.path);
                           return; // 🔹 Stop further execution of the method
                         }
 
@@ -561,29 +572,29 @@ This helps our editors match your style and vision.
                       ),
                     ),
 
-                    TextButton(
-                      onPressed: () async {
-                        await PreferencesService().clearAll();
-                      },
+                    // TextButton(
+                    //   onPressed: () async {
+                    //     await PreferencesService().clearAll();
+                    //   },
 
-                      child: const Text('CLEAR'),
+                    //   child: const Text('CLEAR'),
 
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(
-                          255,
-                          193,
-                          29,
-                          29,
-                        ), // Button background color
-                      ),
-                    ),
+                    //   style: ElevatedButton.styleFrom(
+                    //     backgroundColor: const Color.fromARGB(
+                    //       255,
+                    //       193,
+                    //       29,
+                    //       29,
+                    //     ), // Button background color
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
             ),
           );
         } else {
-          return Scaffold(
+          return ConstrainedScaffold(
             appBar: AppBar(
               title: Text(
                 widget.complaint ?? false
@@ -877,7 +888,7 @@ This will help us ensure we deliver a result that matches your vision.""",
                     final result = await mpesa.stkPushRequest(
                       phoneNumber: phoneNumber ?? '',
                       accountNumber: "174379",
-                      amount: 1,
+                      amount: calculateVideoValue(),
                     );
 
                     // ✅ Update local state with response

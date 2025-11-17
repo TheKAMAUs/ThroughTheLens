@@ -22,14 +22,17 @@ import 'package:memoriesweb/screen/innerpgs/userDetailPage.dart';
 import 'package:memoriesweb/screen/profile_page.dart';
 import 'package:memoriesweb/screen/upload_page.dart';
 import 'package:memoriesweb/screen/videos.dart';
+import 'package:memoriesweb/seo/seo_route_obserer.dart';
+import 'package:memoriesweb/seo/visited_path_observer.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 
 final GoRouter router = GoRouter(
+  observers: [VisitedPathObserver(), SeoRouteObserver()],
   navigatorKey: _rootNavigatorKey,
   initialLocation:
       // Routes.home,
-      Routes.authWrapper,
+      RoutesEnum.authWrapper.path,
 
   debugLogDiagnostics: true,
 
@@ -70,16 +73,16 @@ final GoRouter router = GoRouter(
   // },
   routes: [
     GoRoute(
-      path: Routes.authWrapper,
+      path: RoutesEnum.authWrapper.path,
       builder: (context, state) => AuthWrapper(),
     ),
     GoRoute(
-      path: Routes.loginPageRIV,
+      path: RoutesEnum.loginPageRIV.path,
       builder: (context, state) => LoginScreen(),
     ),
 
     GoRoute(
-      path: Routes.videoEdited, // e.g. "/videoEdited/:edited"
+      path: RoutesEnum.videoEdited.path, // e.g. "/videoEdited/:edited"
       builder: (context, state) {
         final editedParam =
             state.pathParameters['edited']; // Expect "true" or "false"
@@ -99,7 +102,7 @@ final GoRouter router = GoRouter(
     ),
 
     GoRoute(
-      path: Routes.videoComplaint, // e.g. "/videoEdited/:complaint"
+      path: RoutesEnum.videoComplaint.path, // e.g. "/videoEdited/:complaint"
       builder: (context, state) {
         final complaint = state.pathParameters['complaint'] == 'true';
         // Extract the onDone function from state.extra
@@ -115,13 +118,12 @@ final GoRouter router = GoRouter(
       },
     ),
 
+    // GoRoute(
+    //   path: RoutesEnum.videos.path, // Nested route under SplashScreen
+    //   builder: (context, state) => const VideosPage(),
+    // ),
     GoRoute(
-      path: Routes.videos, // Nested route under SplashScreen
-      builder: (context, state) => const VideosPage(),
-    ),
-
-    GoRoute(
-      path: Routes.uploadwitheditor, // '/upload/:assignedEditorId'
+      path: RoutesEnum.uploadWithEditor.path, // '/upload/:assignedEditorId'
       builder: (context, state) {
         final editorId = state.pathParameters['assignedEditorId'];
         print('🔵 Navigated to UploadPage with assignedEditorId: $editorId');
@@ -131,7 +133,7 @@ final GoRouter router = GoRouter(
       },
       routes: [
         GoRoute(
-          path: Routes.videoswithEditor, // 'videos'
+          path: RoutesEnum.videosWithEditor.path, // 'videos'
           builder: (context, state) {
             final editorId = state.pathParameters['assignedEditorId'];
             print(
@@ -149,14 +151,15 @@ final GoRouter router = GoRouter(
               MainScreen(navigationShell: navigationShell),
       branches: [
         StatefulShellBranch(
+          observers: [VisitedPathObserver(), SeoRouteObserver()],
           routes: [
             GoRoute(
-              path: Routes.home, // Nested path for dashboard
+              path: RoutesEnum.home.path, // Nested path for dashboard
               builder:
                   (context, state) => SnapVideoScroll(), // Dashboard widget
               routes: [
                 GoRoute(
-                  path: Routes.fullScreenVideo,
+                  path: RoutesEnum.fullScreenVideo.path,
                   builder: (context, state) {
                     final videoUrl = state.uri.queryParameters['url'] ?? '';
                     final fordownload =
@@ -178,17 +181,24 @@ final GoRouter router = GoRouter(
 
         // // Ad Marketplace Route
         StatefulShellBranch(
+          observers: [VisitedPathObserver(), SeoRouteObserver()],
           routes: [
             GoRoute(
-              path: Routes.explore,
+              path: RoutesEnum.explore.path,
               builder: (context, state) => const ExplorePage(),
               routes: [
                 GoRoute(
-                  path: Routes.acceptedOrders, // Nested route under ExplorePage
+                  path:
+                      RoutesEnum
+                          .acceptedOrders
+                          .path, // Nested route under ExplorePage
                   builder: (context, state) => AcceptedOrdersPage(),
                 ),
                 GoRoute(
-                  path: Routes.assignedOrders, // Nested route under ExplorePage
+                  path:
+                      RoutesEnum
+                          .assignedOrders
+                          .path, // Nested route under ExplorePage
                   builder: (context, state) => AssignedOrdersPage(),
                 ),
 
@@ -210,7 +220,7 @@ final GoRouter router = GoRouter(
                 //   },
                 // ),
                 GoRoute(
-                  path: Routes.fullScreenVideo, // e.g. 'video'
+                  path: RoutesEnum.fullScreenVideo.path, // e.g. 'video'
                   builder: (context, state) {
                     // Safely read from state.extra
                     final extra = state.extra as Map<String, dynamic>? ?? {};
@@ -229,7 +239,7 @@ final GoRouter router = GoRouter(
                 ),
 
                 GoRoute(
-                  path: Routes.fullScreenImage, // e.g. 'image'
+                  path: RoutesEnum.fullScreenImage.path, // e.g. 'image'
                   builder: (context, state) {
                     // Safely read from state.extra
                     final extra = state.extra as Map<String, dynamic>? ?? {};
@@ -252,31 +262,51 @@ final GoRouter router = GoRouter(
         ),
         // My Ads Route
         StatefulShellBranch(
+          observers: [VisitedPathObserver(), SeoRouteObserver()],
           routes: [
             GoRoute(
-              path: Routes.upload,
+              path: RoutesEnum.upload.path,
               builder: (context, state) => UploadPage(),
+              routes: [
+                GoRoute(
+                  path: RoutesEnum.videos.path,
+                  builder: (context, state) {
+                    // 👇 Extract extra data safely
+                    final extra = state.extra as Map<String, dynamic>?;
+
+                    final int imagesAmount = extra?['imagesAmount'] ?? 0;
+
+                    return VideosPage(imagesAmount: imagesAmount);
+                  },
+                ),
+              ],
             ),
           ],
         ),
+
         // Profile Settings Route
         StatefulShellBranch(
+          observers: [VisitedPathObserver(), SeoRouteObserver()],
           routes: [
             // Parent /profileSettings page
             GoRoute(
-              path: Routes.profile, // '/profileSettings'
+              path: RoutesEnum.profile.path, // '/profileSettings'
               builder: (context, state) => ProfilePage(isSelfPage: true),
               routes: [
                 // Nested route: edit profile
                 GoRoute(
-                  path: Routes.profilEdit, // becomes '/profileSettings/edit'
+                  path:
+                      RoutesEnum
+                          .profileEdit
+                          .path, // becomes '/profileSettings/edit'
                   builder: (context, state) => ProfileEditPage(),
                 ),
                 // Nested route: user detail
                 GoRoute(
                   path:
-                      Routes
-                          .userDetailPage, // becomes '/profileSettings/user/:id'
+                      RoutesEnum
+                          .userDetailPage
+                          .path, // becomes '/profileSettings/user/:id'
                   builder: (context, state) {
                     return UserDetailPage();
                   },
@@ -285,8 +315,9 @@ final GoRouter router = GoRouter(
                     // ✅ History Page nested inside User Detail
                     GoRoute(
                       path:
-                          Routes
-                              .userHistory, // /profileSettings/user/:id/history
+                          RoutesEnum
+                              .userHistory
+                              .path, // /profileSettings/user/:id/history
                       builder: (context, state) {
                         return HistoryPage();
                       },
@@ -300,16 +331,16 @@ final GoRouter router = GoRouter(
       ],
     ),
     GoRoute(
-      path: Routes.profilEdit, // Nested route under SplashScreen
+      path: RoutesEnum.profileEdit.path, // Nested route under SplashScreen
       builder: (context, state) => ProfileEditPage(),
     ),
     GoRoute(
-      path: Routes.userDetailPage, // Nested route under SplashScreen
+      path: RoutesEnum.userDetailPage.path, // Nested route under SplashScreen
       builder: (context, state) => UserDetailPage(),
     ),
 
     GoRoute(
-      path: Routes.userDetailPage, // Nested route under SplashScreen
+      path: RoutesEnum.userDetailPage.path, // Nested route under SplashScreen
       builder: (context, state) => AcceptedOrdersPage(),
     ),
   ],

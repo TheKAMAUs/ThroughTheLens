@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memoriesweb/data/auth_service.dart';
+import 'package:memoriesweb/responsive/constrained_scaffold.dart';
 
 class ProfileEditPage extends StatefulWidget {
   @override
@@ -18,7 +19,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ConstrainedScaffold(
       appBar: AppBar(title: Text("Edit Profile")),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

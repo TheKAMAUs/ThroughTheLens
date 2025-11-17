@@ -137,14 +137,10 @@ class LoginScreen extends StatelessWidget {
       onSignup: _signup,
       onSubmitAnimationCompleted: () {
         // Navigate to dashboard or home after success
-        Future.microtask(
-          () => context.go(
-            Routes.home, // Pass the productData as an argument
-          ),
-        );
+        context.go(RoutesEnum.home.path);
       },
 
-      logo: AssetImage('assets/IMG_20250929_080615.jpg'),
+      logo: AssetImage('assets/memories.png'),
       theme: LoginTheme(
         primaryColor: Colors.teal.shade700,
         accentColor: Colors.orange,
@@ -217,7 +213,14 @@ class LoginScreen extends StatelessWidget {
           id: 'privacy-policy',
           mandatory: true,
           text: 'Privacy Policy',
-          linkUrl: 'https://memoriesprivacy.pages.dev/',
+          linkUrl: 'https://memoriesprivacy.pages.dev',
+        ),
+
+        TermOfService(
+          id: 'terms-and-conditions',
+          mandatory: true,
+          text: 'Terms & Conditions',
+          linkUrl: 'https://memoriesprivacy.pages.dev/clients',
         ),
       ],
 

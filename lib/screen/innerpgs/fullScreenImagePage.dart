@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memoriesweb/responsive/constrained_scaffold.dart';
 import 'package:memoriesweb/screen/innerpgs/imageButton.dart';
 
 class FullScreenImagePage extends StatefulWidget {
@@ -26,8 +27,7 @@ class _FullScreenImagePageState extends State<FullScreenImagePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
+    return ConstrainedScaffold(
       body: GestureDetector(
         onTap: _toggleOverlay,
         child: Stack(

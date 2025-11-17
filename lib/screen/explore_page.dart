@@ -8,6 +8,7 @@ import 'package:memoriesweb/data/transactions_service_repo.dart';
 import 'package:memoriesweb/model/clientmodel.dart';
 import 'package:memoriesweb/model/ordermodel.dart';
 import 'package:memoriesweb/navigation/routes.dart';
+import 'package:memoriesweb/responsive/constrained_scaffold.dart';
 import 'package:memoriesweb/screen/innerpgs/fullScreenImagePage.dart';
 import 'package:memoriesweb/screen/innerpgs/smallVideo.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
@@ -45,11 +46,11 @@ class _ExplorePageState extends State<ExplorePage> {
             // Handle selected menu item
             if (value == 'orders') {
               // Go to settings
-              context.push(Routes.nestedAccepted);
+              context.push(RoutesEnum.nestedAccepted.path);
             }
             if (value == 'history') {
               // Go to settings
-              context.push(Routes.nestedAccepted);
+              context.push(RoutesEnum.nestedAccepted.path);
             }
           },
           itemBuilder:
@@ -69,7 +70,7 @@ class _ExplorePageState extends State<ExplorePage> {
           onSelected: (value) {
             // Handle selected menu item
             if (value == 'edited') {
-              context.push(Routes.nestedAssigned); // Go to settings
+              context.push(RoutesEnum.nestedAssigned.path); // Go to settings
             }
           },
           itemBuilder:
@@ -150,7 +151,9 @@ class _ExplorePageState extends State<ExplorePage> {
                                     child: GestureDetector(
                                       onTap: () {
                                         context.push(
-                                          Routes.nestedExPFullScreenImage,
+                                          RoutesEnum
+                                              .nestedExpFullScreenImage
+                                              .path,
                                           extra: {'url': img, 'fordownload': 0},
                                         );
                                         print(
@@ -357,7 +360,7 @@ class _ExplorePageState extends State<ExplorePage> {
     final mediaQuery = MediaQuery.of(context);
     final fem = mediaQuery.size.width / 428;
 
-    return Scaffold(
+    return ConstrainedScaffold(
       body: BlocBuilder<VideoCubit, VideoState>(
         builder: (context, state) {
           if (state.isLoading) {
@@ -373,7 +376,7 @@ class _ExplorePageState extends State<ExplorePage> {
 
           // ✅ Shuffle and take only 3 videos
           final List<Map<String, String>> videos = List.from(
-            state.downloadedVideos,
+            state.exploreVideos,
           )..shuffle();
           final List<Map<String, String>> limitedVideos =
               videos.take(3).toList();
@@ -525,10 +528,8 @@ class _ExplorePageState extends State<ExplorePage> {
                   if (client != null) {
                     // context.push(Routes.uploadwitheditor, extra: client.userUId);
 
-                    final replacedRoute = Routes.uploadwitheditor.replaceFirst(
-                      ':assignedEditorId',
-                      client.userUId,
-                    );
+                    final replacedRoute = RoutesEnum.uploadWithEditor.path
+                        .replaceFirst(':assignedEditorId', client.userUId);
 
                     print('✅ Navigating to: $replacedRoute');
 
@@ -618,9 +619,9 @@ class _ExplorePageState extends State<ExplorePage> {
               itemBuilder: (context, index) {
                 // Example default video thumbnails
                 final sampleVideos = [
-                  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-                  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-                  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+                  'https://firebasestorage.googleapis.com/v0/b/admotion-media-1.firebasestorage.app/o/clientsRawvideos%2FF5YPy8pdkK?alt=media&token=15fcb671-3879-48b0-8cb5-b623cc39352c',
+                  'https://firebasestorage.googleapis.com/v0/b/admotion-media-1.firebasestorage.app/o/clientsRawvideos%2FJ4fFIkq6N8?alt=media&token=9be493e1-96bb-4841-b5ab-d5da807489f6',
+                  'https://firebasestorage.googleapis.com/v0/b/admotion-media-1.firebasestorage.app/o/clientsEditedvideos%2FuQ0hHvr0BQ?alt=media&token=b6630c68-bde7-4d2c-8e17-d24c3ef8918b',
                 ];
                 return ClipRRect(
                   borderRadius: BorderRadius.circular(10),

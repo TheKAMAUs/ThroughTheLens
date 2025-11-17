@@ -58,6 +58,76 @@ class VideoCubit extends Cubit<VideoState> {
     }
   }
 
+  Future<void> getHomeVideos() async {
+    emit(state.copyWith(isLoading: true, hasError: false));
+
+    try {
+      // 🔥 Fetch the only document inside 'homeVideos'
+      final querySnapshot =
+          await FirebaseFirestore.instance.collection('homeVideos').get();
+
+      if (querySnapshot.docs.isEmpty) {
+        print('⚠️ No documents found in homeVideos collection');
+        emit(state.copyWith(isLoading: false));
+        return;
+      }
+
+      // Assuming only one document exists
+      final doc = querySnapshot.docs.first;
+
+      // Extract the list of video URLs
+      List<dynamic> videoUrlList = doc.data()['videos'] ?? [];
+      List<dynamic> ExpvideoUrlList = doc.data()['exploreVideos'] ?? [];
+
+      print('Found ${videoUrlList.length} home videos');
+
+      final List<Map<String, String>> videos = [];
+      final List<Map<String, String>> Explorevideos = [];
+      // 🧩 Convert each video URL into a map with extra info
+      for (var videoUrl in videoUrlList) {
+        String url = videoUrl.toString();
+        videos.add({
+          'videoUrl': url,
+          'firstName': doc.data()['uploaderName'] ?? 'Unknown',
+          'description': doc.data()['description'] ?? '',
+        });
+      }
+
+      for (var videoUrl in ExpvideoUrlList) {
+        String url = videoUrl.toString();
+        Explorevideos.add({
+          'videoUrl': url,
+          'firstName': doc.data()['uploaderName'] ?? 'Unknown',
+          'description': doc.data()['description'] ?? '',
+        });
+      }
+
+      Explorevideos.shuffle();
+      // 🎲 Shuffle the order for a dynamic feed
+      videos.shuffle();
+
+      print('Shuffled home videos list: $videos');
+
+      // 🚀 Emit new state
+      emit(
+        state.copyWith(
+          downloadedVideos: List.from(state.downloadedVideos)..addAll(videos),
+          isLoading: false,
+        ),
+      );
+
+      emit(
+        state.copyWith(
+          exploreVideos: List.from(state.exploreVideos)..addAll(Explorevideos),
+          isLoading: false,
+        ),
+      );
+    } catch (e) {
+      emit(state.copyWith(isLoading: false, hasError: true));
+      print("❌ Error fetching home videos: $e");
+    }
+  }
+
   Future<void> processVideos(List<Map<String, String>> videos) async {
     final cacheManager = DefaultCacheManager();
 

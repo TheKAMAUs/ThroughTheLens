@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:memoriesweb/data/order_service_repo.dart';
 import 'package:memoriesweb/model/ordermodel.dart';
+import 'package:memoriesweb/responsive/constrained_scaffold.dart';
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key});
@@ -67,7 +68,7 @@ class _HistoryPageState extends State<HistoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ConstrainedScaffold(
       appBar: AppBar(
         title: const Text("Edit History"),
         backgroundColor: const Color.fromARGB(255, 199, 202, 204),

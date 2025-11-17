@@ -6,6 +6,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:memoriesweb/data/auth_service.dart';
 import 'package:memoriesweb/data/firebase_storage_repo.dart';
+import 'package:memoriesweb/responsive/constrained_scaffold.dart';
 
 import 'package:nanoid/nanoid.dart';
 import 'package:video_player/video_player.dart';
@@ -164,7 +165,7 @@ class _EditorApplicationPageState extends State<EditorApplicationPage>
             ? fullName.split(' ').sublist(1).join(' ')
             : '';
 
-    return Scaffold(
+    return ConstrainedScaffold(
       appBar: AppBar(title: const Text('Editor Application')),
       body: Padding(
         padding: const EdgeInsets.all(16),

@@ -30,12 +30,12 @@ class _AuthWrapperState extends State<AuthWrapper> {
         _isAuthenticated = true;
         authService.fetchClient(uid: uid);
       });
-      Future.microtask(() => context.go(Routes.home));
+      Future.microtask(() => context.go(RoutesEnum.home.path));
     } else {
       setState(() {
         _isAuthenticated = false;
       });
-      Future.microtask(() => context.go(Routes.home));
+      Future.microtask(() => context.go(RoutesEnum.home.path));
     }
     setState(() {
       _isLoading = false;

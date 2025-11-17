@@ -8,6 +8,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:go_router/go_router.dart';
 import 'package:memoriesweb/data/auth_service.dart';
 import 'package:memoriesweb/navigation/routes.dart';
+import 'package:memoriesweb/responsive/constrained_scaffold.dart';
 import 'package:memoriesweb/screen/innerpgs/videoplay_Item.dart';
 import 'package:memoriesweb/videoBloc/videoState.dart';
 import 'package:memoriesweb/videoBloc/videocubit.dart';
@@ -87,7 +88,7 @@ class _SnapVideoScrollState extends State<SnapVideoScroll> {
     isUserAvailable = globalUserDoc != null;
     print('Building SnapVideoScroll Widget, user available: $isUserAvailable');
 
-    return Scaffold(
+    return ConstrainedScaffold(
       appBar: AppBar(
         elevation: 0,
         title: Row(
@@ -97,7 +98,7 @@ class _SnapVideoScrollState extends State<SnapVideoScroll> {
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: Image.asset(
-                'assets/IMG_20250930_141707.jpg', // replace with your logo path
+                'assets/memories.png', // replace with your logo path
                 height: 40,
               ),
             ),
@@ -105,7 +106,7 @@ class _SnapVideoScrollState extends State<SnapVideoScroll> {
             // Show login button only if user is NOT logged in
             if (!isUserAvailable)
               TextButton(
-                onPressed: () => context.go(Routes.loginPageRIV),
+                onPressed: () => context.go(RoutesEnum.loginPageRIV.path),
                 child: const Text(
                   'Login',
                   style: TextStyle(
@@ -132,8 +133,9 @@ class _SnapVideoScrollState extends State<SnapVideoScroll> {
           final List<Map<String, String>> videos = List.from(
             state.downloadedVideos,
           )..shuffle();
-          final List<Map<String, String>> limitedVideos =
-              videos.take(3).toList();
+          final List<Map<String, String>> limitedVideos = videos
+              .take(3)
+              .toList();
 
           return SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
@@ -158,38 +160,34 @@ class _SnapVideoScrollState extends State<SnapVideoScroll> {
                             height: 1.6,
                             fontWeight: FontWeight.w600,
                             fontStyle: FontStyle.italic,
-                            color:
-                                Theme.of(
-                                  context,
-                                ).colorScheme.onBackground, // Adapts to theme
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onBackground, // Adapts to theme
                           ),
                           child: AnimatedTextKit(
                             animatedTexts: [
                               FlickerAnimatedText(
                                 'When we.... 😎',
                                 textStyle: TextStyle(
-                                  color:
-                                      Theme.of(
-                                        context,
-                                      ).colorScheme.onBackground,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onBackground,
                                 ),
                               ),
                               FlickerAnimatedText(
                                 'When we were..... 🎥',
                                 textStyle: TextStyle(
-                                  color:
-                                      Theme.of(
-                                        context,
-                                      ).colorScheme.onBackground,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onBackground,
                                 ),
                               ),
                               FlickerAnimatedText(
                                 'When we were Here! 🚀🔥',
                                 textStyle: TextStyle(
-                                  color:
-                                      Theme.of(
-                                        context,
-                                      ).colorScheme.onBackground,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onBackground,
                                 ),
                               ),
                             ],

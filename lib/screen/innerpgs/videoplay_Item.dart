@@ -1,12 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:memoriesweb/custom_material_controls.dart';
+
 import 'package:memoriesweb/navigation/routes.dart';
-import 'package:memoriesweb/screen/innerpgs/fullScreenVideoPage.dart';
 
 import 'package:video_player/video_player.dart';
-import 'package:chewie/chewie.dart';
+
 import 'package:visibility_detector/visibility_detector.dart';
 import 'dart:html' as html; // 👈 for disabling right-click on web
 
@@ -48,12 +47,6 @@ class _VideoPlayerItemState extends State<VideoPlayerItem>
   @override
   void initState() {
     super.initState();
-
-    if (kIsWeb) {
-      // disable right-click globally on web
-      // html.document.onContextMenu.listen((event) => event.preventDefault());
-    }
-    // _disableChromeDownloadAndContextMenu();
     _videoPlayerController = VideoPlayerController.network(widget.videoUrl);
     _initializeVideoPlayer();
   }
@@ -61,12 +54,17 @@ class _VideoPlayerItemState extends State<VideoPlayerItem>
   @override
   void dispose() {
     _isDisposed = true;
-    _videoPlayerController.dispose();
+    try {
+      _videoPlayerController.dispose();
+    } catch (e) {
+      print('⚠️ Controller already disposed: $e');
+    }
     super.dispose();
   }
 
   Future<void> _initializeVideoPlayer() async {
     if (widget.videoUrl.isEmpty) return;
+
     try {
       await _videoPlayerController.initialize();
       if (!mounted || _isDisposed) return;
@@ -75,36 +73,31 @@ class _VideoPlayerItemState extends State<VideoPlayerItem>
         ..setLooping(true)
         ..setVolume(_isMuted ? 0 : 1);
 
-      // 👇 Disable download and PiP on web
-      if (kIsWeb) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          final videos = html.document.getElementsByTagName('video');
-          print('🎥 Found ${videos.length} video elements (post-frame).');
-
-          for (int i = 0; i < videos.length; i++) {
-            final node = videos[i];
-            if (node is html.VideoElement) {
-              print('⚙️ [Video #$i] Customizing ${node.src}');
-              node.setAttribute('controlsList', 'nodownload');
-              node.setAttribute('disablePictureInPicture', '');
-
-              // node.removeAttribute('controls'); // Uncomment if you want to hide controls
-            }
-          }
-          print('✅ Video customization done after frame render.');
-        });
+      if (mounted && !_isDisposed) {
+        setState(() => _isInitialized = true);
       }
 
-      setState(() {
-        _isInitialized = true;
-      });
-
-      if (widget.isPreloaded) {
+      if (widget.isPreloaded && !_isDisposed) {
         _videoPlayerController.play();
         _isPlaying = true;
       }
+
+      if (kIsWeb) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (_isDisposed) return;
+          final videos = html.document.getElementsByTagName('video');
+          for (var node in videos) {
+            if (node is html.VideoElement) {
+              node.setAttribute('controlsList', 'nodownload');
+              node.setAttribute('disablePictureInPicture', '');
+            }
+          }
+        });
+      }
     } catch (e) {
-      print('Video initialization failed: $e');
+      if (!_isDisposed) {
+        print('❌ Video initialization failed: $e');
+      }
     }
   }
 
@@ -117,7 +110,7 @@ class _VideoPlayerItemState extends State<VideoPlayerItem>
       _videoPlayerController.play();
     }
 
-    if (mounted) setState(() => _isPlaying = !_isPlaying);
+    if (mounted && !_isDisposed) setState(() => _isPlaying = !_isPlaying);
   }
 
   void _toggleMute() {
@@ -126,40 +119,20 @@ class _VideoPlayerItemState extends State<VideoPlayerItem>
     _isMuted = !_isMuted;
     _videoPlayerController.setVolume(_isMuted ? 0 : 1);
 
-    if (mounted) setState(() {});
-  }
-
-  /// 🚫 Disable Chrome's download button + right-click context menu
-  void _disableChromeDownloadAndContextMenu() {
-    try {
-      // Block right-click / long-press globally (entire screen, not just video)
-      html.document.body?.addEventListener('contextmenu', (event) {
-        event.preventDefault(); // 👈 disables right-click anywhere
-      });
-
-      // Optional: block text/image selection and dragging too
-      html.document.body?.style.userSelect = 'none';
-      html.document.body?.style.pointerEvents = 'auto';
-      html.document.onDragStart.listen((event) => event.preventDefault());
-
-      // Disable Chrome "download" and PiP controls
-      final elements = html.document.getElementsByTagName('video');
-      for (final node in elements) {
-        if (node is html.VideoElement) {
-          node.controls = true;
-          node.controlsList?.add('nodownload');
-          js_util.setProperty(node, 'disablePictureInPicture', true);
-        }
-      }
-
-      print('🚫 Chrome download + context menu disabled globally.');
-    } catch (e) {
-      print('⚠️ Could not disable Chrome download: $e');
-    }
+    if (mounted && !_isDisposed) setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isDisposed) {
+      return const Center(
+        child: Text(
+          "⚠️ Video disposed",
+          style: TextStyle(color: Colors.redAccent),
+        ),
+      );
+    }
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -167,13 +140,12 @@ class _VideoPlayerItemState extends State<VideoPlayerItem>
           borderRadius: BorderRadius.circular(20),
           child: Stack(
             children: [
-              // Video Player
               Container(
                 width: double.infinity,
                 height: double.infinity,
                 color: Colors.black,
                 child:
-                    _isInitialized && !_isDisposed
+                    !_isDisposed && _isInitialized
                         ? VisibilityDetector(
                           key: Key('videoPlayerItem_${widget.index}'),
                           onVisibilityChanged: (info) {
@@ -181,12 +153,16 @@ class _VideoPlayerItemState extends State<VideoPlayerItem>
 
                             if (info.visibleFraction == 0 && _isPlaying) {
                               _videoPlayerController.pause();
-                              if (mounted) setState(() => _isPlaying = false);
+                              if (mounted && !_isDisposed) {
+                                setState(() => _isPlaying = false);
+                              }
                             } else if (info.visibleFraction > 0 &&
                                 !_isPlaying &&
                                 widget.isPreloaded) {
                               _videoPlayerController.play();
-                              if (mounted) setState(() => _isPlaying = true);
+                              if (mounted && !_isDisposed) {
+                                setState(() => _isPlaying = true);
+                              }
                             }
                           },
                           child: VideoPlayer(_videoPlayerController),
@@ -198,17 +174,19 @@ class _VideoPlayerItemState extends State<VideoPlayerItem>
                         ),
               ),
 
-              // Tap areas
+              // Tap handler
               Positioned.fill(
                 child: GestureDetector(
                   behavior: HitTestBehavior.translucent,
                   onTap: () {
                     if (_isDisposed) return;
                     _videoPlayerController.pause();
-                    if (mounted) setState(() => _isPlaying = false);
+                    if (mounted && !_isDisposed) {
+                      setState(() => _isPlaying = false);
+                    }
 
                     context.push(
-                      Routes.nestedExPFullScreenVideo,
+                      RoutesEnum.nestedExpFullScreenVideo.path,
                       extra: {'url': widget.videoUrl, 'fordownload': 6},
                     );
                   },
@@ -216,8 +194,8 @@ class _VideoPlayerItemState extends State<VideoPlayerItem>
                 ),
               ),
 
-              // Play/Pause overlay
-              if (!_isPlaying && _isInitialized)
+              // Overlay play button
+              if (!_isDisposed && !_isPlaying && _isInitialized)
                 Positioned.fill(
                   child: Container(
                     color: Colors.black54,
@@ -231,37 +209,37 @@ class _VideoPlayerItemState extends State<VideoPlayerItem>
                   ),
                 ),
 
-              // Info button
-              Positioned(
-                bottom: 90,
-                left: 40,
-                child: FloatingActionButton.extended(
-                  heroTag: null,
-                  onPressed: () {
-                    widget.onPageChanged(widget.index);
-                    _videoPlayerController.pause();
-                    if (mounted) setState(() => _isPlaying = false);
-                  },
-                  backgroundColor: const Color.fromARGB(255, 255, 39, 126),
-                  icon: const Icon(Icons.info),
-                  label: SizedBox(
-                    width: 120,
-                    child: Text(
-                      widget.productName,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ),
-              ),
+              // // Info button
+              // Positioned(
+              //   bottom: 90,
+              //   left: 40,
+              //   child: FloatingActionButton.extended(
+              //     heroTag: null,
+              //     onPressed: () {
+              //       widget.onPageChanged(widget.index);
+              //       _videoPlayerController.pause();
+              //       if (mounted) setState(() => _isPlaying = false);
+              //     },
+              //     backgroundColor: const Color.fromARGB(255, 255, 39, 126),
+              //     icon: const Icon(Icons.info),
+              //     label: SizedBox(
+              //       width: 120,
+              //       child: Text(
+              //         widget.productName,
+              //         style: const TextStyle(
+              //           color: Colors.white,
+              //           fontSize: 18,
+              //           fontWeight: FontWeight.bold,
+              //         ),
+              //         maxLines: 2,
+              //         overflow: TextOverflow.ellipsis,
+              //       ),
+              //     ),
+              //   ),
+              // ),
 
               // Mute button (mobile only)
-              if (!kIsWeb)
+              if (!kIsWeb && !_isDisposed)
                 Positioned(
                   bottom: 16,
                   right: 16,

@@ -91,20 +91,18 @@ class TransServiceRepo {
   Future<List<OrderModel>> getOrderWithUrl(String targetUrl) async {
     print('Searching for orders with targetUrl: $targetUrl');
 
-    final snapshot =
-        await FirebaseFirestore.instance
-            .collection('orders')
-            .where('editedVideoUrls', arrayContains: targetUrl)
-            .get();
+    final snapshot = await FirebaseFirestore.instance
+        .collection('orders')
+        .where('editedVideoUrls', arrayContains: targetUrl)
+        .get();
 
     print('Query returned ${snapshot.docs.length} documents');
 
     if (snapshot.docs.isNotEmpty) {
-      final orders =
-          snapshot.docs.map((doc) {
-            print('Found order with ID: ${doc.id}');
-            return OrderModel.fromMap(doc.data(), doc.id);
-          }).toList();
+      final orders = snapshot.docs.map((doc) {
+        print('Found order with ID: ${doc.id}');
+        return OrderModel.fromMap(doc.data(), doc.id);
+      }).toList();
 
       print('Mapped ${orders.length} orders to OrderModel');
       return orders;
@@ -212,8 +210,10 @@ class TransServiceRepo {
         }
 
         final editor = Client.fromMap(clientDoc.data()!);
-        final updatedRatingList =
-            [...(editor.rating ?? []), newRating].cast<double>();
+        final updatedRatingList = [
+          ...(editor.rating ?? []),
+          newRating,
+        ].cast<double>();
 
         final updatedEditor = editor.copyWith(
           rating: updatedRatingList,

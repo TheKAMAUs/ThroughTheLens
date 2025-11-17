@@ -110,7 +110,9 @@ class _AssignedOrdersPageState extends State<AssignedOrdersPage> {
                                       child: GestureDetector(
                                         onTap: () {
                                           context.push(
-                                            Routes.nestedExPFullScreenImage,
+                                            RoutesEnum
+                                                .nestedExpFullScreenImage
+                                                .path,
                                             extra: {
                                               'url': img,
                                               'fordownload': 0,

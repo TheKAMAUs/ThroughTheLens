@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:memoriesweb/data/transactions_service_repo.dart';
 import 'package:memoriesweb/navigation/routes.dart';
+import 'package:memoriesweb/responsive/constrained_scaffold.dart';
 import 'package:memoriesweb/screen/innerpgs/videoButton.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -144,8 +145,7 @@ class _FullScreenVideoPageState extends State<FullScreenVideoPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
+    return ConstrainedScaffold(
       body: GestureDetector(
         onTap: _togglePlayPause,
         onLongPress:

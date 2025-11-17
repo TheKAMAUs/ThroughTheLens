@@ -88,7 +88,9 @@ class VideoOptionsSheet extends StatelessWidget {
                                     ),
                                   );
 
-                                  final replacedRoute = Routes.videoComplaint
+                                  final replacedRoute = RoutesEnum
+                                      .videoComplaint
+                                      .path
                                       .replaceFirst(':complaint', 'true');
                                   print('Navigating to complaint page...');
                                   print('Route: $replacedRoute');
